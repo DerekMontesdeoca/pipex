@@ -6,10 +6,9 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 11:48:29 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/03/28 13:43:53 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/03/28 18:43:40 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include <stddef.h>
 #include "libft.h"
 
 /**
@@ -27,13 +26,12 @@ void path_join(const char *head, const char *tail, char *result, size_t size)
 	size_t	len;
 
 	len = ft_strlcpy(result, head, size);
-	while (len > 1)
+	while (len > 1 && result[len - 1] == '/')
 	{
-		if (result[len - 1] == '/')
-			result[len - 1] = '\0';
+		result[len - 1] = '\0';
 		--len;
 	}
 	result[len++] = '/';
-	result[len++] = '\0';
+	result[len] = '\0';
 	ft_strlcpy(result + len, tail, size - len);
 }
