@@ -1,2 +1,5 @@
-*.o
-*.gch
+tests/cmocka
+tests/bats-core
+tests/local
+**/*.o
+**/*.gch
