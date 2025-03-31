@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 19:06:51 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/03/31 03:52:23 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/03/31 05:18:51 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef PIPEX_H
@@ -33,7 +33,7 @@ typedef struct s_env_path
 /**
  * Creates a new env_path.
  */
-bool	env_path_make(t_env_path *env_path, const char * const *envp);
+bool	env_path_make(t_env_path *env_path, const char **envp);
 
 /**
  * Joins a path with a basename to form an absolute path to an executable.
@@ -52,5 +52,32 @@ void	path_join(
  * @returns The index of the variable or -1 if not found.
  */
 int		find_path_variable(const char **envp);
+
+/**
+ * Represents all the data required to execute a piped command in the shell.
+ * path is a pointer to an argv string and does not need to be freed.
+ * argv is dynamically allocated, but its strings are not only argv needs to be
+ * freed.
+ */
+typedef struct s_command
+{
+	char		*path;
+	char		**argv;
+	int			pip_out[2];
+	int			pip_in[2];
+	char		**envp;
+	t_env_path 	*env_path;
+}	t_command;
+
+void	command_init(t_command *command);
+
+bool	command_make(
+		t_command *command,
+		char ***argv,
+		bool first_command,
+		bool last_command
+);
+
+void	command_fork(t_command *command);
 
 #endif

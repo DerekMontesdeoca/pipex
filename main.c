@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 19:08:28 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/03/28 11:38:35 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/03/31 05:07:57 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <string.h>
@@ -22,7 +22,7 @@
 // paths. Its a good idea. I need to calculate the length of the max path. It 
 // can be pre-cached at read time. Maybe I need to expand my path struct.
 int	ft_execvpe(
-		t_env_path *env_path, char *path, char **const argv, char **const envp
+		char *path, char **argv, char **envp, t_env_path *env_path
 ) {
 	int	i;
 	char *final_path;
@@ -87,27 +87,21 @@ void pipes_swap(int *pip_out, int *pip_in)
 	pip_out[1] = -1;
 }
 
-int	fork_commands(t_env_path *env_path, char **argv, int n_commands)
+int	fork_commands(t_env_path *env_path, char **argv, int n_commands, char **envp)
 {
-	int		i;
-	int		pip_in[2];
-	int		pip_out[2];
-	int		n_forks;
+	int			i;
+	t_command 	command;
 
-	pipes_init(pip_in, pip_out);
-	n_forks = 0;
+	command_init(&command);
 	i = 0;
 	while (i < n_commands)
 	{
-		if (i < (n_commands - 1))
-		{
-			if (pipe(pip_out) < 0)
-				return (n_forks);
-			fork_command(env_path, argv, pip_in, pip_out);
-		}
-		pipes_swap(pip_out, pip_in);
+		if (!command_make(&command, &argv, i < (n_commands - 1)))
+			return (i);
+		command_fork(&command, env_path);
 		++i;
 	}
+	return (i);
 }
 
 int wait_children(int size)
@@ -131,12 +125,11 @@ int wait_children(int size)
 int	main(int argc, char **argv, char **envp)
 {
 	t_env_path	env_path;
-	int			n_commands;
 	int			n_forks;
 
 	if (argc != 4)
 		return (1);
-	env_path_make(&env_path, envp);
+	env_path_make(&env_path, (const char **)envp);
 	n_forks = fork_commands(&env_path, argv, 2);
 	return (wait_children(n_forks));
 }
