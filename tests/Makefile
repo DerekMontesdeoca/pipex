@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 CC := cc
-UNIT_TESTS := test_path
+UNIT_TESTS := test_path test_env_path_statics
 UNIT_TESTS := $(UNIT_TESTS:%=unit_tests/%)
 TEST := test.sh
 BONUS_TEST := test_bonus.sh
@@ -27,9 +27,14 @@ test_bonus: $(BATS)
 	./$(BONUS_NAME)  
 
 unit_test: $(UNIT_TESTS)
-	$(foreach t, $(UNIT_TESTS), ./$(t))
+	for t in $(UNIT_TESTS); do \
+		./$$t; \
+	done
 
 unit_tests/test_path: unit_tests/test_path.o ../path.o $(LIBFT)
+	$(CC) $(LDFLAGS) -o $@ $^
+
+unit_tests/test_env_path_statics: unit_tests/test_env_path_statics.o ../path.o $(LIBFT)
 	$(CC) $(LDFLAGS) -o $@ $^
 
 %.o: %.c
