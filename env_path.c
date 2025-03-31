@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 10:48:14 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/03/31 03:52:25 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/03/31 05:03:51 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <stdlib.h>
@@ -109,7 +109,7 @@ static void	copy_and_split_path(
 	*(path_push_iter++) = begin;
 }
 
-bool	env_path_make(t_env_path *env_path, const char * const *envp)
+bool	env_path_make(t_env_path *env_path, const char **envp)
 {
 	int			path_index;
 	const char	*raw_path;
