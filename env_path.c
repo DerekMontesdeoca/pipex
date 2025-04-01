@@ -6,14 +6,19 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 10:48:14 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/03/31 05:03:51 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/01 04:50:29 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <stdlib.h>
 #include <stdbool.h>
 #include "pipex.h"
 
-static void count_paths_and_len(const char *str, int *n_paths, size_t *len)
+/**
+ * Count the len of the PATH string while counting the amount of path
+ * components. This is used to be able to create the env_path later because we
+ * will need to malloc a path copy and an array of pointers to each component.
+ */
+static void count_paths_and_len(const char *str, size_t *n_paths, size_t *len)
 {
 	size_t	i;
 	bool	is_new_path;
@@ -104,29 +109,27 @@ static void	copy_and_split_path(
 			copy_char(raw_path, &end, &is_new_path);
 		++raw_path;
 	}
-	if (is_new_path)
-		split(&is_new_path, &path_push_iter, &begin, &end);
-	*(path_push_iter++) = begin;
+	split(&is_new_path, &path_push_iter, &begin, &end);
 }
 
 bool	env_path_make(t_env_path *env_path, const char **envp)
 {
 	int			path_index;
 	const char	*raw_path;
-	size_t		path_len;
 
 	env_path->paths = NULL;
-	env_path->size = 0;
-	env_path->paths_len = 0;
+	env_path->paths_size = 0;
+	env_path->raw_path_len = 0;
 	raw_path = NULL;
 	path_index = find_path_variable(envp);
 	if (path_index >= 0)
 		raw_path = envp[path_index] + 5;
-	count_paths_and_len(raw_path, &env_path->size, &path_len);
-	env_path->paths = malloc(sizeof(char *) * env_path->size);
+	count_paths_and_len(raw_path, &env_path->paths_size,
+			&env_path->raw_path_len);
+	env_path->paths = malloc(sizeof(char *) * env_path->paths_size);
 	if (env_path->paths == NULL)
 		return (false);
-	env_path->raw_path = malloc(path_len + 1);
+	env_path->raw_path = malloc(env_path->raw_path_len + 1);
 	if (env_path->raw_path == NULL)
 		return (free(env_path->paths), -1);
 	copy_and_split_path(env_path, raw_path);

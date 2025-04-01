@@ -1,3 +1,4 @@
+pipex
 tests/cmocka
 tests/bats-core
 tests/local

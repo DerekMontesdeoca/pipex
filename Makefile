@@ -6,21 +6,32 @@
 #    By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/27 19:01:30 by dmontesd          #+#    #+#              #
-#    Updated: 2025/03/28 18:36:59 by dmontesd         ###   ########.fr        #
+#    Updated: 2025/04/01 00:01:11 by dmontesd         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
+CC := cc
 NAME := pipex
-SRCS := pipex.c path.c
+SRCS := command_child.c command_fork.c env_path.c main.c path.c pipex.c \
+		pointer_split.c
 OBJS := $(SRCS:.c=.o)
 HEADERS := pipex.h
-CFLAGS := 
-CPPFLAGS := 
+LIBFT_DIR := libft
+LIBFT := $(LIBFT_DIR)/libft.a
+CFLAGS := -g3
+CPPFLAGS := -I $(LIBFT_DIR)
 LDFLAGS :=
 
-all:
+all: $(NAME)
 
-$(NAME):
+$(NAME): $(OBJS) $(HEADERS) $(LIBFT)
+	$(CC) $(LDFLAGS) -o $@ $(filter-out $(HEADERS), $^)
+
+%.o: %.c
+	$(CC) -c $(CFLAGS) $(CPPFLAGS) -o $@ $<
+
+$(LIBFT):
+	$(MAKE) -C $(LIBFT_DIR)
 
 clean:
 	rm -rf $(OBJS)

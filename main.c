@@ -6,130 +6,84 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 19:08:28 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/03/31 05:07:57 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/01 04:21:14 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdlib.h>
 #include <wait.h>
 #include <stdio.h>
-#include "libft.h"
 #include "pipex.h"
 
-// Todo: Im thinking of allocating a single string and using it to try all
-// paths. Its a good idea. I need to calculate the length of the max path. It 
-// can be pre-cached at read time. Maybe I need to expand my path struct.
-int	ft_execvpe(
-		char *path, char **argv, char **envp, t_env_path *env_path
+typedef struct s_execution_result
+{
+	int		n_forks;
+	pid_t	last_pid;
+}	t_execution_result;
+
+t_execution_result	fork_commands(
+		t_env_path *env_path,
+		char **argv,
+		int n_commands,
+		char **envp
 ) {
-	int	i;
-	char *final_path;
-	
-	i = 0;
-	while (i < env_path->size)
-	{
-		final_path = path_join(env_path->paths[i], path);
-		execve(final_path, argv, envp);
-	}
-}
-
-int	pipe_child_setup(int *pip_out, int *pip_in)
-{
-	if (pip_in[1] != -1)
-	{
-		close(pip_in[1]);
-		pip_in[1] = -1;
-	}
-	if (pip_out[0] != -1)
-	{
-		close(pip_out[0]);
-		pip_out[0] = -1;
-	}
-	if (pip_in[0] != -1)
-		if (dup2(pip_in[0], STDIN_FILENO) < 0)
-			return (-1);
-	if (pip_out[1] != -1)
-		if (dup2(pip_out[1], STDOUT_FILENO) < 0)
-			return (-1);
-}
-
-int	fork_command(
-		t_env_path *env_path, char **argv, int *pip_in, int *pip_out
-) {
-	pid_t	pid;
-
-	pid = fork();
-	if (pid == 0)
-	{
-		if (pipe_child_setup(pip_out, pip_in) < 0)
-			return (-1);
-		// TODO: Don't replace envp path delims with nulls.
-		ft_execvpe(env_path, command, command_args, envp);
-	}
-}
-
-void pipes_init(int *pip_1, int *pip_2)
-{
-	pip_1[0] = -1;
-	pip_1[1] = -1;
-	pip_2[0] = -1;
-	pip_2[1] = -1;
-}
-
-void pipes_swap(int *pip_out, int *pip_in)
-{
-	close(pip_in[0]);
-	close(pip_in[1]);
-	ft_memcpy(pip_out, pip_in, sizeof(int) * 2);
-	pip_out[0] = -1;
-	pip_out[1] = -1;
-}
-
-int	fork_commands(t_env_path *env_path, char **argv, int n_commands, char **envp)
-{
-	int			i;
+	t_execution_result result;
 	t_command 	command;
 
-	command_init(&command);
-	i = 0;
-	while (i < n_commands)
+	command_init(&command, envp, env_path);
+	result.n_forks = 0;
+	++argv;
+	while (result.n_forks < n_commands)
 	{
-		if (!command_make(&command, &argv, i < (n_commands - 1)))
-			return (i);
-		command_fork(&command, env_path);
-		++i;
+		result.last_pid = command_fork(&command, &argv, result.n_forks == 0,
+				result.n_forks == (n_commands - 1));
+		if (result.last_pid < 0)
+			return (result);
+		++result.n_forks;
 	}
-	return (i);
+	command_cleanup(&command);
+	return (result);
 }
 
-int wait_children(int size)
+int wait_children(t_execution_result execution_result)
 {
 	int		i;
 	pid_t	pid;
+	int		wstatus;
+	int		last_wstatus;
 
 	i = 0;
-	while (i < size)
+	pid = 0;
+	while (i < execution_result.n_forks)
 	{
-		pid = wait(NULL);
+		pid = wait(&wstatus);
 		if (pid < 0)
-			fprintf(stderr, "wait pid %d: %s", pid, strerror(pid));
+			perror("wait");
+		if (pid == execution_result.last_pid)
+			last_wstatus = wstatus;
 		++i;
 	}
-	if (pid < 0)
-		return (pid);
+	if (WIFEXITED(last_wstatus))
+		return (WEXITSTATUS(last_wstatus));
+	if (WIFSIGNALED(last_wstatus))
+		return (WTERMSIG(last_wstatus));
 	return (0);
 }
 
 int	main(int argc, char **argv, char **envp)
 {
-	t_env_path	env_path;
-	int			n_forks;
+	t_env_path			env_path;
+	t_execution_result	execution_result;
+	int					exit_code;
 
-	if (argc != 4)
-		return (1);
-	env_path_make(&env_path, (const char **)envp);
-	n_forks = fork_commands(&env_path, argv, 2);
-	return (wait_children(n_forks));
+	if (argc != 5)
+		return (EXIT_FAILURE);
+	if (!env_path_make(&env_path, (const char **)envp))
+		return (EXIT_FAILURE);
+	execution_result = fork_commands(&env_path, argv, 2, envp);
+	exit_code = wait_children(execution_result);
+	free(env_path.paths);
+	free(env_path.raw_path);
+	return (exit_code);
 }

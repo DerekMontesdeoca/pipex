@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 19:06:51 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/03/31 05:18:51 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/01 02:17:17 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef PIPEX_H
@@ -26,8 +26,8 @@ typedef struct s_env_path
 {
 	char	*raw_path;
 	char	**paths;
-	int		size;
-	int		paths_len;
+	size_t	paths_size;
+	size_t	raw_path_len;
 }	t_env_path;
 
 /**
@@ -36,10 +36,14 @@ typedef struct s_env_path
 bool	env_path_make(t_env_path *env_path, const char **envp);
 
 /**
- * Joins a path with a basename to form an absolute path to an executable.
- * This is only mean to work for joining files with directories for the purpose
- * of creating an execvpe. It has not been tested to work as a tool to join all
- * kinds of paths.
+ * Joins head and tail by appending the tail to the head and storing the result
+ * in result. IMPORTANT: allocate at least len(head) + len(tail) + 1 for '/'
+ * + 1 for '\0'.
+ * 
+ * @param result Out parameter. If result size < len(head) + len(tail) + 1, then
+ * path_join returns error.
+ * @param size Out parameter. The size of the result.
+ * @return 0 on success and -1 for error.
  */
 void	path_join(
 			const char *head,
@@ -55,21 +59,39 @@ int		find_path_variable(const char **envp);
 
 /**
  * Represents all the data required to execute a piped command in the shell.
- * path is a pointer to an argv string and does not need to be freed.
- * argv is dynamically allocated, but its strings are not only argv needs to be
- * freed.
+ * 
+ * @member path A pointer to the command or absolute or relative path to an
+ * executable file. This pointer points to an address of the program's argv.
+ * 
+ * @member args A pointer to the arguments of the command invoked. This points
+ * to an address of the program's argv. The argv will have been modified to be
+ * delimitted by nul chars and can be traversed using the argc.
  */
 typedef struct s_command
 {
-	char		*path;
-	char		**argv;
+	int			argc;
+	char		**args;
+	char		*redirection;
+	int			redirect_fd;
+	char		*heredoc_delim;
 	int			pip_out[2];
 	int			pip_in[2];
 	char		**envp;
 	t_env_path 	*env_path;
 }	t_command;
 
-void	command_init(t_command *command);
+void	command_init(t_command *command, char **envp, t_env_path *env_path);
+
+/**
+ * Populates the command and forks it. Handles all the pipe creation and
+ * redirection. Cleans up the parent process by closing unused fd's.
+ */
+int	command_fork(
+		t_command *command,
+		char ***argv,
+		bool first_command,
+		bool last_command
+);
 
 bool	command_make(
 		t_command *command,
@@ -78,6 +100,16 @@ bool	command_make(
 		bool last_command
 );
 
-void	command_fork(t_command *command);
+void	command_cleanup(t_command *command);
+
+void	child_execvpe(t_command *command);
+
+void	child_error(char *str, int exit_status);
+
+void	child_setup_pipes(t_command *command);
+
+void	child_redirect_fds(t_command *command);
+
+char	**pointer_split_inplace(char *str, char delim, size_t *size_out);
 
 #endif
