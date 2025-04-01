@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 14:02:14 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/01 04:21:26 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/01 05:52:29 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <stdlib.h>
@@ -62,7 +62,14 @@ void	command_cleanup(t_command *command)
 		close(command->pip_out[1]);
 }
 
-bool	command_make(
+/**
+ * Since the command struct is reused for all children, this function
+ * reinitializes the necessary members to create the next process.
+ * This function moves the output pipe of the previous command into the
+ * input slot of the next command and creates a new pipe for
+ * output if necessary. That way, all commands are connected.
+ */
+static bool	command_make(
 		t_command *command,
 		char ***argv,
 		bool first_command,

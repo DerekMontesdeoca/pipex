@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 20:13:35 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/01 05:02:24 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/01 06:13:21 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <stdbool.h>
@@ -64,17 +64,17 @@ static size_t	count_split_segments(char *str, char delim)
 	return (count);
 }
 
-char	**pointer_split_inplace(char *str, char delim, size_t *size_out)
+char	**pointer_split_inplace(char *str, char delim, size_t *len_out)
 {
 	char	**result;
 
 	if (str == NULL)
 		return (NULL);
-	*size_out = count_split_segments(str, delim);
-	result = malloc(sizeof(char *) * (*size_out + 1));
+	*len_out = count_split_segments(str, delim);
+	result = malloc(sizeof(char *) * (*len_out + 1));
 	if (result == NULL)
 		return (NULL);
-	result[*size_out] = NULL;
+	result[*len_out] = NULL;
 	split_segments(str, delim, result);
 	return (result);
 }

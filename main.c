@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 19:08:28 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/01 04:21:14 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/01 05:31:23 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <unistd.h>
@@ -15,12 +15,6 @@
 #include <wait.h>
 #include <stdio.h>
 #include "pipex.h"
-
-typedef struct s_execution_result
-{
-	int		n_forks;
-	pid_t	last_pid;
-}	t_execution_result;
 
 t_execution_result	fork_commands(
 		t_env_path *env_path,
