@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 18:05:13 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/01 05:10:19 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/04 19:09:50 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fcntl.h>
@@ -41,24 +41,51 @@ static size_t	max_len(char **strs, size_t size)
 	return (max);
 }
 
+typedef struct s_path_iter
+{
+	char		*path;
+	size_t		path_size;
+	size_t		current;
+	t_env_path	env_path;
+	char		*program_name;
+}	t_path_iter;
+
+bool	path_iter_make(t_path_iter *path_iter, char **environ, char *program_name)
+{
+	path_iter->program_name = program_name;
+	if (!env_path_make(&path_iter->env_path, environ))
+		return (false);
+	path_iter->path_size = max_len(path_iter->env_path.paths,
+			path_iter->env_path.paths_size) + ft_strlen(program_name) + 2;
+	path_iter->path = malloc(path_iter->path_size);
+	if (path_iter->path == NULL)
+		return (free(path_iter->env_path.paths), free(path_iter->env_path.raw_path), false);
+	path_iter->current = 0;
+	return (true);
+}
+
+bool	path_iter_next(t_path_iter *iter)
+{
+	if (iter->current >= iter->env_path.paths_size)
+		return (false);
+	path_join(iter->env_path.paths[iter->current], iter->program_name, iter->path, iter->path_size);
+	++iter->current;
+	return (true);
+}
+
 static void try_paths(t_command *command)
 {
-	char	*path;
-	size_t	size;
-	size_t	i;
-	int		exit_code;
+	int			exit_code;
+	extern char	**environ;
+	t_path_iter	path_iter;
 
-	size = max_len(command->env_path->paths, command->env_path->paths_size)
-		+ ft_strlen(command->args[0]) + 2;
-	path = malloc(size);
-	i = 0;
-	while (i < (size_t) command->env_path->paths_size)
+	if (!path_iter_make(&path_iter, environ, command->args[0]))
+		child_error(command->args[0], EXIT_FAILURE);
+	while (path_iter_next(&path_iter))
 	{
-		path_join(command->env_path->paths[i], command->args[0], path, size);
-		exit_code = execve(path, command->args, command->envp);
+		exit_code = execve(path_iter.path, command->args, environ);
 		if (exit_code < 0 && errno != ENOENT && errno != ENOTDIR)
 			child_error(command->args[0], EXIT_FAILURE);
-		++i;
 	}
 	if (exit_code < 0)
 		child_error(command->args[0], EXIT_FAILURE);
@@ -66,9 +93,10 @@ static void try_paths(t_command *command)
 
 void	child_execvpe(t_command *command)
 {
+	extern char	**environ;
 	if (ft_strchr(command->args[0], '/') != NULL)
 	{
-		if (execve(command->args[0], command->args, command->envp) < 0)
+		if (execve(command->args[0], command->args, environ) < 0)
 			child_error(command->args[0], EXIT_FAILURE);
 	}
 	else

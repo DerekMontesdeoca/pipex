@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 19:06:51 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/01 06:14:56 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/04 18:23:04 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef PIPEX_H
@@ -40,15 +40,15 @@ typedef struct s_execution_result
 typedef struct s_env_path
 {
 	char	*raw_path;
+	size_t	raw_path_len;
 	char	**paths;
 	size_t	paths_size;
-	size_t	raw_path_len;
 }	t_env_path;
 
 /**
  * Creates a new env_path.
  */
-bool	env_path_make(t_env_path *env_path, const char **envp);
+bool	env_path_make(t_env_path *env_path, char **envp);
 
 /**
  * Joins head and tail by appending the tail to the head and storing the result
@@ -70,9 +70,9 @@ void	path_join(
 /**
  * Finds the PATH environment variable in a char **envp.
  * 
- * @returns The index of the variable or -1 if not found.
+ * @returns A pointer to the variable without "PATH=" or NULL.
  */
-int		find_path_variable(const char **envp);
+char	*find_path_variable(char **envp);
 
 /**
  * Represents all the data required to execute a piped command in the shell.
@@ -94,15 +94,13 @@ typedef struct s_command
 	char		*heredoc_delim;
 	int			pip_out[2];
 	int			pip_in[2];
-	char		**envp;
-	t_env_path 	*env_path;
 }	t_command;
 
 /**
  * A zero initialization of the struct. Allows the struct to be ready to be
  * used by each process on every iteration of the fork loop.
  */
-void	command_init(t_command *command, char **envp, t_env_path *env_path);
+void	command_init(t_command *command);
 
 /**
  * Populates the command, creates necessary pipes, forks the process, and

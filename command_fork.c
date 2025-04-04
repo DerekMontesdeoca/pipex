@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 14:02:14 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/01 05:52:29 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/04 18:23:31 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <stdlib.h>
@@ -116,7 +116,7 @@ int	command_fork(
 	return (pid);
 }
 
-void	command_init(t_command *command, char **envp, t_env_path *env_path)
+void	command_init(t_command *command)
 {
 	command->pip_out[0] = -1;
 	command->pip_out[1] = -1;
@@ -125,7 +125,5 @@ void	command_init(t_command *command, char **envp, t_env_path *env_path)
 	command->args = NULL;
 	command->argc = 0;
 	command->redirection = NULL;
-	command->envp = envp;
-	command->env_path = env_path;
 	command->heredoc_delim = NULL;
 }

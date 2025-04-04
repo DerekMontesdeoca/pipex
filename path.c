@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 11:48:29 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/01 06:15:18 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/04 14:48:20 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "libft.h"
@@ -36,7 +36,7 @@ void path_join(const char *head, const char *tail, char *result, size_t size)
 	ft_strlcpy(result + len, tail, size - len);
 }
 
-int	find_path_variable(const char **envp)
+char	*find_path_variable(char **envp)
 {
 	size_t	i;
 
@@ -44,8 +44,8 @@ int	find_path_variable(const char **envp)
 	while (envp[i] != NULL)
 	{
 		if (ft_strncmp(envp[i], "PATH=", 5) == 0)
-			return (i);
+			return (envp[i] + 5);
 		++i;
 	}
-	return (-1);
+	return (NULL);
 }

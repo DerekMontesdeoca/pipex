@@ -23,10 +23,10 @@ test: $(BATS)
 	./$(NAME)
 
 test_bonus: $(BATS)
-	@$(MAKE) -C .. bonus
 	./$(BONUS_NAME)  
 
 unit_test: $(UNIT_TESTS)
+	$(MAKE) -C ..
 	for t in $(UNIT_TESTS); do \
 		./$$t; \
 	done

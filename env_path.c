@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 10:48:14 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/01 06:15:54 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/04 16:28:03 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <stdlib.h>
@@ -112,26 +112,23 @@ static void	copy_and_split_path(
 	split(&is_new_path, &path_push_iter, &begin, &end);
 }
 
-bool	env_path_make(t_env_path *env_path, const char **envp)
+bool	env_path_make(t_env_path *env_path, char **envp)
 {
-	int			path_index;
 	const char	*raw_path;
 
 	env_path->paths = NULL;
-	env_path->paths_size = 0;
+	env_path->raw_path = NULL;
 	env_path->raw_path_len = 0;
-	raw_path = NULL;
-	path_index = find_path_variable(envp);
-	if (path_index >= 0)
-		raw_path = envp[path_index] + 5;
-	count_paths_and_len(raw_path, &env_path->paths_size,
+	env_path->paths_size = 0;
+	raw_path = find_path_variable(envp);
+	count_paths_and_len(raw_path, &env_path->paths_size, 
 			&env_path->raw_path_len);
 	env_path->paths = malloc(sizeof(char *) * env_path->paths_size);
 	if (env_path->paths == NULL)
 		return (false);
 	env_path->raw_path = malloc(env_path->raw_path_len + 1);
 	if (env_path->raw_path == NULL)
-		return (free(env_path->paths), -1);
+		return (free(env_path->paths), false);
 	copy_and_split_path(env_path, raw_path);
 	return (true);
 }

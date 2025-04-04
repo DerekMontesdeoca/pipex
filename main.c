@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 19:08:28 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/01 05:31:23 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/04 18:25:31 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <unistd.h>
@@ -17,15 +17,13 @@
 #include "pipex.h"
 
 t_execution_result	fork_commands(
-		t_env_path *env_path,
 		char **argv,
-		int n_commands,
-		char **envp
+		int n_commands
 ) {
 	t_execution_result result;
 	t_command 	command;
 
-	command_init(&command, envp, env_path);
+	command_init(&command);
 	result.n_forks = 0;
 	++argv;
 	while (result.n_forks < n_commands)
@@ -65,19 +63,14 @@ int wait_children(t_execution_result execution_result)
 	return (0);
 }
 
-int	main(int argc, char **argv, char **envp)
+int	main(int argc, char **argv)
 {
-	t_env_path			env_path;
 	t_execution_result	execution_result;
 	int					exit_code;
 
 	if (argc != 5)
 		return (EXIT_FAILURE);
-	if (!env_path_make(&env_path, (const char **)envp))
-		return (EXIT_FAILURE);
-	execution_result = fork_commands(&env_path, argv, 2, envp);
+	execution_result = fork_commands(argv, 2);
 	exit_code = wait_children(execution_result);
-	free(env_path.paths);
-	free(env_path.raw_path);
 	return (exit_code);
 }

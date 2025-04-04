@@ -9,7 +9,7 @@
 static void test_count_paths_and_len(
 		const char *path, int expected_paths, size_t expected_len
 ) {
-	int	n_paths;
+	size_t	n_paths;
 	size_t len;
 	count_paths_and_len(path, &n_paths, &len);
 	assert_int_equal(n_paths, expected_paths);
@@ -72,8 +72,8 @@ static void test_copy_and_split(
 		int expected_paths_size
 ) {
 	t_env_path env_path = {
-		.paths = malloc(sizeof(char *) * expected_paths_size), .size = expected_paths_size,
-		.raw_path = malloc(expected_raw_path_size)
+		.paths = malloc(sizeof(char *) * expected_paths_size), .paths_size = expected_paths_size,
+		.raw_path = malloc(expected_raw_path_size), .raw_path_len = expected_raw_path_size
 	};
 	assert_non_null(env_path.raw_path);
 	assert_non_null(env_path.paths);
