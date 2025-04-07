@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 14:02:14 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/07 05:23:10 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/07 05:31:03 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <stdlib.h>
@@ -14,14 +14,6 @@
 #include <stdio.h>
 #include "pipex.h"
 #include "libft/libft.h"
-
-static void	parse_command( t_command *command, char ***argv)
-{
-	size_t	size;
-
-	command->args = split_str_ptr_array(*((*argv)++), ' ', &size);
-	command->argc = size;
-}
 
 static void	parse_cli(
 		t_command *command,
@@ -42,7 +34,7 @@ static void	parse_cli(
 			command->redirect_fd = STDIN_FILENO;
 		}
 	}
-	parse_command(command, argv);
+	command->args = split_str_ptr_array(*((*argv)++), ' ', &command->argc);
 	if (is_last_command)
 	{
 		command->redirection = *((*argv)++);
