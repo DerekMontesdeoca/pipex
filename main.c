@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 19:08:28 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/04 18:25:31 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/07 05:24:51 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <unistd.h>
@@ -20,8 +20,8 @@ t_execution_result	fork_commands(
 		char **argv,
 		int n_commands
 ) {
-	t_execution_result result;
-	t_command 	command;
+	t_execution_result	result;
+	t_command			command;
 
 	command_init(&command);
 	result.n_forks = 0;
@@ -38,7 +38,7 @@ t_execution_result	fork_commands(
 	return (result);
 }
 
-int wait_children(t_execution_result execution_result)
+int	wait_children(t_execution_result execution_result)
 {
 	int		i;
 	pid_t	pid;

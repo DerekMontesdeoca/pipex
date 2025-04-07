@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 11:48:29 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/07 05:17:23 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/07 05:25:02 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "libft/libft.h"
@@ -21,7 +21,7 @@
  * @param size Out parameter. The size of the result.
  * @return 0 on success and -1 for error.
  */
-void path_join(const char *head, const char *tail, char *result, size_t size)
+void	path_join(const char *head, const char *tail, char *result, size_t size)
 {
 	size_t	len;
 

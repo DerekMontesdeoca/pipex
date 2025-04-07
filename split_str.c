@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 20:13:35 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/07 05:18:52 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/07 05:26:07 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <stdbool.h>
@@ -16,7 +16,7 @@ static void	split_segments(char *str, char delim, char **push_iter)
 {
 	char	*end;
 	bool	is_empty;
-	
+
 	if (str == NULL || push_iter == NULL)
 		return ;
 	is_empty = true;

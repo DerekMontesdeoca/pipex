@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 19:06:51 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/07 05:16:02 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/07 05:22:42 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef PIPEX_H
@@ -91,7 +91,6 @@ typedef struct s_path_iter
 	t_env_path	env_path;
 	char		*program_name;
 }	t_path_iter;
-
 
 /**
  * Creates a consumable path_iter.
