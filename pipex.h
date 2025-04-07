@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 19:06:51 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/04 18:23:04 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/07 04:42:08 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef PIPEX_H
@@ -14,7 +14,7 @@
 
 # include <stddef.h>
 # include <stdbool.h>
-#include <unistd.h>
+# include <unistd.h>
 
 /**
  * Struct to return from the fork loop execution.
@@ -109,12 +109,12 @@ void	command_init(t_command *command);
  * 
  * @returns The fd of the newly forked process or -1 on error.
  */
-int	command_fork(
-		t_command *command,
-		char ***argv,
-		bool first_command,
-		bool last_command
-);
+int		command_fork(
+			t_command *command,
+			char ***argv,
+			bool first_command,
+			bool last_command
+			);
 
 /**
  * Cleans up the remaining pipes after all forks are done.
