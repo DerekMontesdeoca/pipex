@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 19:06:51 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/07 04:42:08 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/07 05:16:02 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef PIPEX_H
@@ -73,6 +73,43 @@ void	path_join(
  * @returns A pointer to the variable without "PATH=" or NULL.
  */
 char	*find_path_variable(char **envp);
+
+/**
+ * An env path iterator that is consumed once traversed. Every call to next
+ * joins the path with a program name specified when created. 
+ * t_path_iter must be freed.
+ *
+ * @param path A buffer of the size of the max len path + / + program_name + \0.
+ * @param path_size The size of @param path.
+ * @param program_name a pointer to the program name on args.
+ */
+typedef struct s_path_iter
+{
+	char		*path;
+	size_t		path_size;
+	size_t		current;
+	t_env_path	env_path;
+	char		*program_name;
+}	t_path_iter;
+
+
+/**
+ * Creates a consumable path_iter.
+ *
+ * @param program_name A pointer to the name of the program that will be
+ * concatenated with the path on every call to next().
+ */
+bool	path_iter_make(t_path_iter *iter, char **environ, char *program_name);
+
+/**
+ * Must be called before taking the value from @member path.
+ *
+ * @returns true when there is a valid value in @member path. When the iter is
+ * consumed, it returns false.
+ */
+bool	path_iter_next(t_path_iter *iter);
+
+void	path_iter_free(t_path_iter *iter);
 
 /**
  * Represents all the data required to execute a piped command in the shell.
@@ -164,6 +201,6 @@ void	child_redirect_fds(t_command *command);
  * @returns A dynamically allocated array of pointers to the original string.
  * This string must be freed. This array is NULL terminated.
  */
-char	**pointer_split_inplace(char *str, char delim, size_t *len_out);
+char	**split_str_ptr_array(char *str, char delim, size_t *len_out);
 
 #endif

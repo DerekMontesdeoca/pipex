@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pointer_split.c                                    :+:      :+:    :+:   */
+/*   split_str.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 20:13:35 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/01 06:13:21 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/07 05:18:52 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <stdbool.h>
@@ -64,7 +64,7 @@ static size_t	count_split_segments(char *str, char delim)
 	return (count);
 }
 
-char	**pointer_split_inplace(char *str, char delim, size_t *len_out)
+char	**split_str_ptr_array(char *str, char delim, size_t *len_out)
 {
 	char	**result;
 

@@ -6,10 +6,10 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 11:48:29 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/04 14:48:20 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/07 05:17:23 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include "libft.h"
+#include "libft/libft.h"
 
 /**
  * Joins head and tail by appending the tail to the head and storing the result

@@ -6,20 +6,20 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 14:02:14 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/04 18:23:31 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/07 05:16:19 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
 #include "pipex.h"
-#include "libft.h"
+#include "libft/libft.h"
 
 static void parse_command( t_command *command, char ***argv)
 {
 	size_t	size;
 
-	command->args = pointer_split_inplace(*((*argv)++), ' ', &size);
+	command->args = split_str_ptr_array(*((*argv)++), ' ', &size);
 	command->argc = size;
 }
 
