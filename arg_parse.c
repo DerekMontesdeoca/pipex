@@ -1,82 +1,39 @@
-/* ************************************************************************** */
-/*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   arg_parse.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 20:13:35 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/07 20:15:43 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/08 21:12:55 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include <stdbool.h>
 #include <stdlib.h>
 
-static void	split_segments(char *str, char delim, char **push_iter)
+typedef struct s_args
 {
-	char	*end;
-	bool	is_empty;
+	size_t	n_args;
+	size_t	len;
+	char	*args;
+	char	**split_args;
+}	t_args;
 
-	if (str == NULL || push_iter == NULL)
-		return ;
-	is_empty = true;
-	end = str;
-	while (*end != '\0')
-	{
-		if (*end == delim && !is_empty)
-		{
-			is_empty = true;
-			*(push_iter++) = str;
-			*end = '\0';
-		}
-		else if (*end != delim && is_empty)
-		{
-			str = end;
-			is_empty = false;
-		}
-		++end;
-	}
-	if (!is_empty)
-		*push_iter = str;
+void args_init(t_args *args)
+{
+	args->args = NULL;
+	args->split_args = NULL;
+	args->len = 0;
+	args->n_args = 0;
 }
 
-static size_t	count_split_segments(char *str, char delim)
+void	args_free_contents(t_args *args)
 {
-	bool	is_empty;
-	size_t	count;
-
-	if (str == NULL)
-		return (0u);
-	is_empty = true;
-	count = 0;
-	while (*str != '\0')
-	{
-		if (*str != delim && is_empty)
-			is_empty = false;
-		if (*str == delim && !is_empty)
-		{
-			is_empty = true;
-			++count;
-		}
-		++str;
-	}
-	count += !is_empty;
-	return (count);
-}
-
-char	**split_str_ptr_array(char *str, char delim, size_t *len_out)
-{
-	char	**result;
-
-	if (str == NULL)
-		return (NULL);
-	*len_out = count_split_segments(str, delim);
-	result = malloc(sizeof(char *) * (*len_out + 1));
-	if (result == NULL)
-		return (NULL);
-	result[*len_out] = NULL;
-	split_segments(str, delim, result);
-	return (result);
+	if (args->args != NULL)
+		free(args->args);
+	if (args->split_args != NULL)
+		free(args->split_args);
+	args_init(args);
 }
 
 typedef enum e_parse_state
@@ -92,6 +49,7 @@ typedef struct s_arg_parser
 	t_parse_state	state;
 	bool			prev_is_backslash;
 	char			*args;
+	char			cur;
 	size_t			pos;
 }	t_arg_parser;
 
@@ -113,17 +71,18 @@ char arg_parser_char(t_arg_parser *parser)
 	return (parser->args[parser->pos]);
 }
 
-/**
- * Counts the args in @param args while replacing delimitters with '\0'.
- */
-static void	parse(
-		t_arg_parser *parser,
-		void (*on_token_end)(void *data),
-		void (*on_char)(char c, void *data)
-) {
-	while (arg_parser_char(parser) != '\0')
+bool	arg_parser_next(t_arg_parser *parser) {
+	parser->cur = -1;
+	while (parser->cur == -1)
 	{
-		if (parser->state == PARSE_STATE_EMPTY)
+		if (arg_parser_char(parser) == '\0' && parser->state == PARSE_STATE_EMPTY)
+			return (false);
+		else if (arg_parser_char(parser) == '\0')
+		{
+			parser->state = PARSE_STATE_EMPTY;
+			parser->cur = '\0';
+		}
+		else if (parser->state == PARSE_STATE_EMPTY)
 		{
 			if (arg_parser_char(parser) == '"')
 				parser->state = PARSE_STATE_IN_DOUBLE_QUOTES;
@@ -139,7 +98,7 @@ static void	parse(
 			if (parser->prev_is_backslash)
 			{
 				parser->prev_is_backslash = false;
-				on_char(arg_parser_char(parser), data);
+				return (parser->cur = parser->args[parser->pos], true);
 			}
 			else if (arg_parser_char(parser) == '\\')
 				parser->prev_is_backslash = true;
@@ -149,9 +108,11 @@ static void	parse(
 				parser->state = PARSE_STATE_IN_DOUBLE_QUOTES;
 			else if (arg_parser_char(parser) == ' ')
 			{
-				on_token_end(data);
 				parser->state = PARSE_STATE_EMPTY;
+				return (parser->cur = '\0', true);
 			}
+			else
+				parser->cur = parser->args[parser->pos];
 			++parser->pos;
 		}
 		else if (parser->state == PARSE_STATE_IN_SINGLE_QUOTES)
@@ -159,7 +120,7 @@ static void	parse(
 			if (arg_parser_char(parser) == '\'')
 				parser->state = PARSE_STATE_IN_WORD;
 			else
-				on_char(arg_parser_char(parser), data);
+				parser->cur = parser->args[parser->pos];
 			++parser->pos;
 		}
 		else 
@@ -167,7 +128,7 @@ static void	parse(
 			if (parser->prev_is_backslash)
 			{
 				parser->prev_is_backslash = false;
-				on_char(arg_parser_char(parser), data);
+				parser->cur = parser->args[parser->pos];
 			}
 			else if (arg_parser_char(parser) == '\\')
 				parser->prev_is_backslash = true;
@@ -176,39 +137,50 @@ static void	parse(
 			++parser->pos;
 		}
 	}
+	return (true);
 }
 
-
-/**
- * Parses command args by splitting spaces and quoted phrases with simple or
- * double quotes.
- *
- * @param args The command string, including the program name invocation. If 
- * this is NULL, the function returns NULL as well.
- * @param len_out Out parameter to store the length of the resulting array.
- *
- * @return A NULL delimitted array of splitted arguments that must be freed. On
- * error, NULL is returned.
- */
-char	**parse_command_args(char *args, size_t *len_out)
+void	split_args(t_arg_parser *parser, t_args *args)
 {
-	t_parse_state	state;
+	char	**arr_insert;
+	char	*arg_insert;
 
-	if (args == NULL)
-		return (NULL);
+	arr_insert = args->split_args;
+	arg_insert = args->args;
+	while (arg_parser_next(parser))
+	{
+		*(arr_insert++) = arg_insert;
+		*(arg_insert++) = parser->cur;
+		while (parser->cur != '\0')
+		{
+			arg_parser_next(parser);
+			*(arg_insert++) = parser->cur;
+		}
+	}
+	*(arr_insert++) = NULL;
 }
 
+bool	parse_command_args(char *raw_args, t_args *args_out)
+{
+	t_arg_parser	parser;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+	if (raw_args == NULL)
+		return (false);
+	arg_parser_init(&parser, raw_args);
+	args_init(args_out);
+	while (arg_parser_next(&parser))
+	{
+		++args_out->len;
+		if (parser.cur == '\0')
+			++args_out->n_args;
+	}
+	args_out->args = malloc(args_out->len + 1);
+	if (args_out->args == NULL)
+		return (NULL);
+	args_out->split_args = malloc((args_out->n_args + 1) * sizeof(char *));
+	if (args_out->split_args == NULL)
+		return (free(args_out->args), NULL);
+	arg_parser_reset(&parser);
+	split_args(&parser, args_out);
+	return (true);
+}
