@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 CC := cc
-UNIT_TESTS := test_path test_env_path_statics
+UNIT_TESTS := test_path test_env_path_statics test_arg_parse
 UNIT_TESTS := $(UNIT_TESTS:%=unit_tests/%)
 TEST := test.sh
 BONUS_TEST := test_bonus.sh
@@ -31,10 +31,14 @@ unit_test: $(UNIT_TESTS)
 		./$$t; \
 	done
 
-unit_tests/test_path: unit_tests/test_path.o ../path.o $(LIBFT)
+unit_tests/bin/test_path: unit_tests/test_path.o ../path.o $(LIBFT)
 	$(CC) $(LDFLAGS) -o $@ $^
 
-unit_tests/test_env_path_statics: unit_tests/test_env_path_statics.o ../path.o $(LIBFT)
+unit_tests/bin/test_env_path_statics: unit_tests/test_env_path_statics.o \
+	../path.o $(LIBFT)
+	$(CC) $(LDFLAGS) -o $@ $^
+
+unit_tests/bin/test_arg_parse: unit_tests/test_arg_parse.c $(LIBFT)
 	$(CC) $(LDFLAGS) -o $@ $^
 
 %.o: %.c

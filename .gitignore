@@ -4,3 +4,4 @@ tests/bats-core
 tests/local
 **/*.o
 **/*.gch
+tests/unit_tests/bin/*

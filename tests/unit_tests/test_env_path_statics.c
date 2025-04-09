@@ -67,13 +67,17 @@ static void test_count_paths_and_len_empty(void **state)
 static void test_copy_and_split(
 		const char *raw_path,
 		char *expected_raw_path,
+		int expected_raw_path_size,
 		char **expected_paths,
 		int expected_paths_size
 ) {
-	size_t expected_raw_path_len = strlen(raw_path);
+	if (expected_raw_path_size < 1)
+		fail_msg("Raw path size should be > 1\n");
 	t_env_path env_path = {
-		.paths = malloc(sizeof(char *) * expected_paths_size), .paths_size = expected_paths_size,
-		.raw_path = malloc(expected_raw_path_size), .raw_path_len = expected_raw_path_size
+		.paths = malloc(sizeof(char *) * expected_paths_size), 
+		.paths_size = expected_paths_size,
+		.raw_path = malloc(expected_raw_path_size),
+		.raw_path_len = expected_raw_path_size - 1,
 	};
 	assert_non_null(env_path.raw_path);
 	assert_non_null(env_path.paths);
