@@ -11,11 +11,11 @@ static void test_arg_parse(const char *raw_args, t_args *expected_args)
 	t_args args_out;
 	assert_true(parse_command_args(raw_args, &args_out));
 	assert_uint_equal(args_out.n_args, expected_args->n_args);
-	assert_uint_equal(args_out.len, expected_args->len);
+	assert_uint_equal(args_out.size, expected_args->size);
 	size_t i = 0;
 	for (i = 0; args_out.split_args[i] != NULL; ++i);
 	assert_uint_equal(args_out.n_args, i);
-	assert_memory_equal(args_out.args, expected_args->args, expected_args->len + 1);
+	assert_memory_equal(args_out.args, expected_args->args, expected_args->size);
 	for (i = 0; i < expected_args->n_args; ++i)
 		assert_string_equal(args_out.split_args[i], expected_args->split_args[i]);
 	assert_null(args_out.split_args[i]);
@@ -31,7 +31,7 @@ static void test_basic(void **state)
 	t_args expected = {
 		.split_args = split_args,
 		.n_args = 3,
-		.len = strlen(raw_args),
+		.size = strlen(raw_args) + 1,
 		.args = "grep\0-q\0hola",
 	};
 	test_arg_parse(raw_args, &expected);
@@ -45,7 +45,7 @@ static void test_empty(void **state)
 	t_args expected = {
 		.split_args = split_args,
 		.n_args = 1,
-		.len = strlen(raw_args),
+		.size = strlen(raw_args) + 1,
 		.args = "",
 	};
 	test_arg_parse(raw_args, &expected);
@@ -65,7 +65,7 @@ static void test_quotes(void **state)
 	t_args expected = {
 		.split_args = split_args,
 		.n_args = 3,
-		.len = 20,
+		.size = 21,
 		.args = "sed\0-E\0s/hola/chao/g",
 	};
 	test_arg_parse(raw_args, &expected);
@@ -79,7 +79,7 @@ static void test_double_quotes(void **state)
 	t_args expected = {
 		.split_args = split_args,
 		.n_args = 4,
-		.len = 22,
+		.size = 23,
 		.args = "sed\0-E\0s/hola/chao/g\0h",
 	};
 	test_arg_parse(raw_args, &expected);
@@ -93,7 +93,7 @@ static void test_escape_backslash(void **state)
 	t_args expected = {
 		.split_args = split_args,
 		.n_args = 6,
-		.len = 24,
+		.size = 25,
 		.args = "so\0why\0am i \0this bs\0\\\0\"",
 	};
 	test_arg_parse(raw_args, &expected);

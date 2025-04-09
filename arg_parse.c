@@ -14,7 +14,7 @@
 typedef struct s_args
 {
 	size_t	n_args;
-	size_t	len;
+	size_t	size;
 	char	*args;
 	char	**split_args;
 }	t_args;
@@ -23,7 +23,7 @@ void args_init(t_args *args)
 {
 	args->args = NULL;
 	args->split_args = NULL;
-	args->len = 0;
+	args->size = 0;
 	args->n_args = 0;
 }
 
@@ -172,12 +172,11 @@ bool	parse_command_args(const char *raw_args, t_args *args_out)
 	args_init(args_out);
 	while (arg_parser_next(&parser))
 	{
-		++args_out->len;
+		++args_out->size;
 		if (parser.cur == '\0')
 			++args_out->n_args;
 	}
-	--args_out->len;
-	args_out->args = malloc(args_out->len + 1);
+	args_out->args = malloc(args_out->size);
 	if (args_out->args == NULL)
 		return (NULL);
 	args_out->split_args = malloc((args_out->n_args + 1) * sizeof(char *));
