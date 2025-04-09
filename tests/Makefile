@@ -1,7 +1,7 @@
 SHELL := /bin/bash
 CC := cc
 UNIT_TESTS := test_path test_env_path_statics test_arg_parse
-UNIT_TESTS := $(UNIT_TESTS:%=unit_tests/%)
+UNIT_TESTS := $(UNIT_TESTS:%=unit_tests/bin/%)
 TEST := test.sh
 BONUS_TEST := test_bonus.sh
 BATS := local/bin/bats
