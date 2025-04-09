@@ -48,7 +48,7 @@ typedef struct s_arg_parser
 {
 	t_parse_state	state;
 	bool			prev_is_backslash;
-	char			*args;
+	const char		*args;
 	char			cur;
 	size_t			pos;
 }	t_arg_parser;
@@ -56,11 +56,11 @@ typedef struct s_arg_parser
 void	arg_parser_reset(t_arg_parser *parser)
 {
 	parser->pos = 0;
-	parser->state = PARSE_STATE_EMPTY;
+	parser->state = PARSE_STATE_IN_WORD;
 	parser->prev_is_backslash = false;
 }
 
-void	arg_parser_init(t_arg_parser *parser, char *args)
+void	arg_parser_init(t_arg_parser *parser, const char *args)
 {
 	parser->args = args;
 	arg_parser_reset(parser);
@@ -98,7 +98,7 @@ bool	arg_parser_next(t_arg_parser *parser) {
 			if (parser->prev_is_backslash)
 			{
 				parser->prev_is_backslash = false;
-				return (parser->cur = parser->args[parser->pos], true);
+				parser->cur = parser->args[parser->pos];
 			}
 			else if (arg_parser_char(parser) == '\\')
 				parser->prev_is_backslash = true;
@@ -109,7 +109,7 @@ bool	arg_parser_next(t_arg_parser *parser) {
 			else if (arg_parser_char(parser) == ' ')
 			{
 				parser->state = PARSE_STATE_EMPTY;
-				return (parser->cur = '\0', true);
+				parser->cur = '\0';
 			}
 			else
 				parser->cur = parser->args[parser->pos];
@@ -134,6 +134,8 @@ bool	arg_parser_next(t_arg_parser *parser) {
 				parser->prev_is_backslash = true;
 			else if (arg_parser_char(parser) == '"')
 				parser->state = PARSE_STATE_IN_WORD;
+			else
+				parser->cur = parser->args[parser->pos];
 			++parser->pos;
 		}
 	}
@@ -160,7 +162,7 @@ void	split_args(t_arg_parser *parser, t_args *args)
 	*(arr_insert++) = NULL;
 }
 
-bool	parse_command_args(char *raw_args, t_args *args_out)
+bool	parse_command_args(const char *raw_args, t_args *args_out)
 {
 	t_arg_parser	parser;
 
@@ -174,6 +176,7 @@ bool	parse_command_args(char *raw_args, t_args *args_out)
 		if (parser.cur == '\0')
 			++args_out->n_args;
 	}
+	--args_out->len;
 	args_out->args = malloc(args_out->len + 1);
 	if (args_out->args == NULL)
 		return (NULL);
