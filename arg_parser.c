@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 01:22:36 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/10 02:12:44 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/10 15:41:50 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,13 +27,13 @@ void	arg_parser_init(t_arg_parser *parser, const char *args)
 	arg_parser_reset(parser);
 }
 
-bool	arg_parser_next(t_arg_parser *parser) 
+bool	arg_parser_next(t_arg_parser *parser)
 {
 	parser->cur = -1;
 	while (parser->cur == -1)
 	{
-		if (arg_parser_char(parser) == '\0' 
-				&& parser->state == PARSE_STATE_EMPTY)
+		if (arg_parser_char(parser) == '\0'
+			&& parser->state == PARSE_STATE_EMPTY)
 			return (false);
 		else if (arg_parser_char(parser) == '\0')
 		{
@@ -46,7 +46,7 @@ bool	arg_parser_next(t_arg_parser *parser)
 			arg_parser_in_word_state(parser);
 		else if (parser->state == PARSE_STATE_IN_SINGLE_QUOTES)
 			arg_parser_single_quotes_state(parser);
-		else 
+		else
 			arg_parser_double_quotes_state(parser);
 	}
 	return (true);

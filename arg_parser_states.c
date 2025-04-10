@@ -6,13 +6,13 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 01:25:56 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/10 02:13:34 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/10 15:47:45 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "arg_parser.h"
 
-inline char arg_parser_char(t_arg_parser *parser)
+inline char	arg_parser_char(t_arg_parser *parser)
 {
 	return (parser->args[parser->pos]);
 }

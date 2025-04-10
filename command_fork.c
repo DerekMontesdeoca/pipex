@@ -6,20 +6,20 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 14:02:14 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/10 03:04:26 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/10 15:45:49 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-#include <stdlib.h>
+
 #include <unistd.h>
 #include <stdio.h>
 #include "args.h"
 #include "pipex.h"
 #include "libft/libft.h"
 
-static bool	command_make( t_command *command, char ***argv,
-		bool first_command, bool last_command);
-static void	parse_cli( t_command *command, char ***argv,
-		bool is_first_command, bool is_last_command);
+static bool	command_make(t_command *command, char ***argv,
+				bool first_command, bool last_command);
+static void	parse_cli(t_command *command, char ***argv,
+				bool is_first_command, bool is_last_command);
 
 void	command_init(t_command *command)
 {

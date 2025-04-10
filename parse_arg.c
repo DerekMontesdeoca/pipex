@@ -1,10 +1,12 @@
+/* ************************************************************************** */
+/*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   parse_arg.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/03/31 20:13:35 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/08 21:12:55 by dmontesd         ###   ########.fr       */
+/*   Created: 2025/04/10 15:42:54 by dmontesd          #+#    #+#             */
+/*   Updated: 2025/04/10 15:43:11 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +42,7 @@ bool	parse_args(const char *raw_args, t_args *args_out)
 	return (true);
 }
 
-void args_init(t_args *args)
+void	args_init(t_args *args)
 {
 	args->args = NULL;
 	args->split_args = NULL;
@@ -76,4 +78,3 @@ static void	split_args(t_arg_parser *parser, t_args *args)
 	}
 	*(arr_insert++) = NULL;
 }
-

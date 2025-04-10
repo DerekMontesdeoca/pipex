@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 02:10:39 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/10 02:11:56 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/10 15:42:13 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ typedef enum e_parse_state
 	PARSE_STATE_IN_SINGLE_QUOTES,
 	PARSE_STATE_IN_DOUBLE_QUOTES,
 	PARSE_STATE_IN_WORD,
-} t_parse_state;
+}	t_parse_state;
 
 typedef struct s_arg_parser
 {
@@ -33,7 +33,7 @@ typedef struct s_arg_parser
 	size_t			pos;
 }	t_arg_parser;
 
-char arg_parser_char(t_arg_parser *parser);
+char	arg_parser_char(t_arg_parser *parser);
 
 void	arg_parser_reset(t_arg_parser *parser);
 

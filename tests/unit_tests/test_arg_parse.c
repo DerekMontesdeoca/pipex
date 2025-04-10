@@ -4,12 +4,12 @@
 #include <stdint.h>
 #include <cmocka.h>
 #include <string.h>
-#include "arg_parse.c"
+#include "args.h"
 
 static void test_arg_parse(const char *raw_args, t_args *expected_args)
 {
 	t_args args_out;
-	assert_true(parse_command_args(raw_args, &args_out));
+	assert_true(parse_args(raw_args, &args_out));
 	assert_uint_equal(args_out.n_args, expected_args->n_args);
 	assert_uint_equal(args_out.size, expected_args->size);
 	size_t i = 0;
@@ -54,7 +54,7 @@ static void test_empty(void **state)
 static void test_null(void **state)
 {
 	(void) state;
-	assert_false(parse_command_args(NULL , NULL));
+	assert_false(parse_args(NULL , NULL));
 }
 
 static void test_quotes(void **state)

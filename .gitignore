@@ -5,3 +5,4 @@ tests/local
 **/*.o
 **/*.gch
 tests/unit_tests/bin/*
+!**/.gitkeep
