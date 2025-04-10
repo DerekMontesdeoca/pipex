@@ -6,11 +6,12 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 18:05:13 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/10 03:20:58 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/10 18:14:15 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fcntl.h>
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -95,8 +96,12 @@ void	child_redirect_fds(t_command *command)
 		return ;
 	fd = open(command->redirection, flag, 0664);
 	if (fd < 0)
-		child_error(command->args.split_args[0], EXIT_FAILURE);
+		child_error(command->redirection, EXIT_FAILURE);
 	if (dup2(fd, command->redirect_fd) < 0)
-		child_error(command->args.split_args[0], EXIT_FAILURE);
+	{
+		ft_fprintf(STDERR_FILENO, "%s: dup2: %s\n", command->args.split_args[0],
+				strerror(errno));
+		exit(EXIT_FAILURE);
+	}
 	close(fd);
 }
