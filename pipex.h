@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 19:06:51 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/10 02:58:57 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/10 03:10:55 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef PIPEX_H
@@ -114,13 +114,13 @@ void	path_iter_free(t_path_iter *iter);
 /**
  * Represents all the data required to execute a piped command in the shell.
  * 
- * @member args An array of pointers to main's argv. Like argv, the first param
- * has the invoked name of the executable. In order to create these pointers,
- * the delimiters in argv are changed into NUL bytes.
+ * @member args Struct containing split args.
  * @member redirection File to redirect input or output to. redirect_fd
  * determines where this file is redirected to after opening.
  * @member pip_out Pipe created for the child's output.
  * @member pip_in Pipe created for the child's input.
+ * @member heredoc_delim Stored so child can know when to stop reading from
+ * stdin.
  */
 typedef struct s_command
 {
