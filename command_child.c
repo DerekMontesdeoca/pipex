@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 18:05:13 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/07 05:12:59 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/10 03:20:58 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fcntl.h>
@@ -29,26 +29,27 @@ static void	try_paths(t_command *command)
 	extern char	**environ;
 	t_path_iter	path_iter;
 
-	if (!path_iter_make(&path_iter, environ, command->args[0]))
-		child_error(command->args[0], EXIT_FAILURE);
+	if (!path_iter_make(&path_iter, environ, command->args.split_args[0]))
+		child_error(command->args.split_args[0], EXIT_FAILURE);
 	while (path_iter_next(&path_iter))
 	{
-		exit_code = execve(path_iter.path, command->args, environ);
+		exit_code = execve(path_iter.path, command->args.split_args, environ);
 		if (exit_code < 0 && errno != ENOENT && errno != ENOTDIR)
-			child_error(command->args[0], EXIT_FAILURE);
+			child_error(command->args.split_args[0], EXIT_FAILURE);
 	}
 	if (exit_code < 0)
-		child_error(command->args[0], EXIT_FAILURE);
+		child_error(command->args.split_args[0], EXIT_FAILURE);
 }
 
 void	child_execvpe(t_command *command)
 {
 	extern char	**environ;
 
-	if (ft_strchr(command->args[0], '/') != NULL)
+	if (ft_strchr(command->args.split_args[0], '/') != NULL)
 	{
-		if (execve(command->args[0], command->args, environ) < 0)
-			child_error(command->args[0], EXIT_FAILURE);
+		if (execve(command->args.split_args[0],
+				command->args.split_args, environ) < 0)
+			child_error(command->args.split_args[0], EXIT_FAILURE);
 	}
 	else
 		try_paths(command);
@@ -94,8 +95,8 @@ void	child_redirect_fds(t_command *command)
 		return ;
 	fd = open(command->redirection, flag, 0664);
 	if (fd < 0)
-		child_error(command->args[0], EXIT_FAILURE);
+		child_error(command->args.split_args[0], EXIT_FAILURE);
 	if (dup2(fd, command->redirect_fd) < 0)
-		child_error(command->args[0], EXIT_FAILURE);
+		child_error(command->args.split_args[0], EXIT_FAILURE);
 	close(fd);
 }

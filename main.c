@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 19:08:28 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/10 02:59:50 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/10 03:14:06 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <unistd.h>
@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <wait.h>
 #include <stdio.h>
+#include "libft/libft.h"
 #include "pipex.h"
 
 t_execution_result	fork_commands(
@@ -73,7 +74,11 @@ int	main(int argc, char **argv)
 	int					exit_code;
 
 	if (argc != 5)
+	{
+		ft_fprintf(STDERR_FILENO,
+				"Wrong number of arguments: %d, expected: 4\n", argc - 1);
 		return (EXIT_FAILURE);
+	}
 	execution_result = fork_commands(argv, 2);
 	exit_code = wait_children(execution_result);
 	return (exit_code);
