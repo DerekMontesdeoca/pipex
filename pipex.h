@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 19:06:51 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/07 05:33:55 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/10 02:22:10 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef PIPEX_H
@@ -15,6 +15,7 @@
 # include <stddef.h>
 # include <stdbool.h>
 # include <unistd.h>
+# include "args.h"
 
 /**
  * Struct to return from the fork loop execution.
@@ -184,22 +185,5 @@ void	child_setup_pipes(t_command *command);
  * Handle all child redirection needs beyond pipes.
  */
 void	child_redirect_fds(t_command *command);
-
-/**
- * Split a string by a delimitter but instead of doing a malloc for each string,
- * replace the delimitters in the original string with NUL bytes and malloc an
- * array of pointers to the original string. The return value must be freed.
- * Collapses consecutive delimitters. The resulting array is NULL terminated.
- *
- * @param str The string that will be modified by replacing the delimitters with
- * NUL bytes.
- * @param delim The delimitter character.
- * @param len_out An out parameter to store the len of the result. Because it
- * is NULL terminated, the size = len + 1;
- *
- * @returns A dynamically allocated array of pointers to the original string.
- * This string must be freed. This array is NULL terminated.
- */
-char	**split_str_ptr_array(char *str, char delim, size_t *len_out);
 
 #endif
