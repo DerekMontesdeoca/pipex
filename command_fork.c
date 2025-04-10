@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 14:02:14 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/10 02:35:27 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/10 03:04:26 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <stdlib.h>
@@ -32,6 +32,10 @@ void	command_init(t_command *command)
 	command->heredoc_delim = NULL;
 }
 
+/**
+ * @param argv Needs to be a ptr to array of strings (char ***) to be able to 
+ * consume argv as they are processed.
+ */
 int	command_fork(
 		t_command *command,
 		char ***argv,
@@ -69,8 +73,9 @@ void	command_cleanup(t_command *command)
 }
 
 /**
- * Since the command struct is reused for all children, this function
- * reinitializes the necessary members to create the next process.
+ * First parses the command line from argv. Then, since the command struct is
+ * reused for all children, this function reinitializes the necessary members 
+ * to create the next process.
  * This function moves the output pipe of the previous command into the
  * input slot of the next command and creates a new pipe for
  * output if necessary. That way, all commands are connected.
@@ -98,6 +103,12 @@ static bool	command_make(
 	return (true);
 }
 
+/**
+ * Extract all the information needed for 1 command from argv and store it in
+ * the command struct. argv is incremented as it is processed.
+ * Information extracted includes redirections, files, heredocs and argv for
+ * the subprocess.
+ */
 static void	parse_cli(
 		t_command *command,
 		char ***argv,

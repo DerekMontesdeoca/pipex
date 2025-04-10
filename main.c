@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 19:08:28 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/07 05:24:51 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/10 02:59:50 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <unistd.h>
@@ -28,8 +28,12 @@ t_execution_result	fork_commands(
 	++argv;
 	while (result.n_forks < n_commands)
 	{
-		result.last_pid = command_fork(&command, &argv, result.n_forks == 0,
-				result.n_forks == (n_commands - 1));
+		result.last_pid = command_fork(
+			&command,
+			&argv,
+			result.n_forks == 0,
+			result.n_forks == (n_commands - 1)
+		);
 		if (result.last_pid < 0)
 			return (result);
 		++result.n_forks;

@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 19:06:51 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/10 02:24:49 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/10 02:58:57 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef PIPEX_H
@@ -139,9 +139,13 @@ typedef struct s_command
 void	command_init(t_command *command);
 
 /**
- * Populates the command, creates necessary pipes, forks the process, and
- * delegates to them the opening of files, redirection, and closing of fd's.
- * After that, it cleans up any unused fd's in the parent.
+ * Parses the command arguments, populates the command, creates necessary pipes,
+ * forks the process, and delegates to the forked process the opening of files,
+ * redirection, and closing of fd's. After that, it cleans up any unused fd's in
+ * the parent.
+ *
+ * @param argv A ptr to array of strings (char ***), so args can be consumed
+ * as they are processed.
  * 
  * @returns The fd of the newly forked process or -1 on error.
  */
