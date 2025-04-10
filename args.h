@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 01:48:53 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/10 02:14:41 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/10 02:30:15 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@ typedef struct s_args
 	char	*args;
 	char	**split_args;
 }	t_args;
+
+void	args_init(t_args *args);
 
 void	args_free_contents(t_args *args);
 

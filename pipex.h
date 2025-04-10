@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 19:06:51 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/10 02:22:10 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/10 02:24:49 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef PIPEX_H
@@ -124,8 +124,7 @@ void	path_iter_free(t_path_iter *iter);
  */
 typedef struct s_command
 {
-	size_t		argc;
-	char		**args;
+	t_args		args;
 	char		*redirection;
 	int			redirect_fd;
 	char		*heredoc_delim;

@@ -14,7 +14,6 @@
 #include "arg_parser.h"
 
 static void	split_args(t_arg_parser *parser, t_args *args);
-static void args_init(t_args *args);
 
 bool	parse_args(const char *raw_args, t_args *args_out)
 {
@@ -41,6 +40,14 @@ bool	parse_args(const char *raw_args, t_args *args_out)
 	return (true);
 }
 
+void args_init(t_args *args)
+{
+	args->args = NULL;
+	args->split_args = NULL;
+	args->size = 0;
+	args->n_args = 0;
+}
+
 void	args_free_contents(t_args *args)
 {
 	if (args->args != NULL)
@@ -48,14 +55,6 @@ void	args_free_contents(t_args *args)
 	if (args->split_args != NULL)
 		free(args->split_args);
 	args_init(args);
-}
-
-static void args_init(t_args *args)
-{
-	args->args = NULL;
-	args->split_args = NULL;
-	args->size = 0;
-	args->n_args = 0;
 }
 
 static void	split_args(t_arg_parser *parser, t_args *args)

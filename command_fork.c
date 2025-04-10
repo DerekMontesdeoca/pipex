@@ -6,40 +6,54 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 14:02:14 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/07 05:31:03 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/10 02:35:27 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
+#include "args.h"
 #include "pipex.h"
 #include "libft/libft.h"
 
-static void	parse_cli(
+static bool	command_make( t_command *command, char ***argv,
+		bool first_command, bool last_command);
+static void	parse_cli( t_command *command, char ***argv,
+		bool is_first_command, bool is_last_command);
+
+void	command_init(t_command *command)
+{
+	command->pip_out[0] = -1;
+	command->pip_out[1] = -1;
+	command->pip_in[0] = -1;
+	command->pip_in[1] = -1;
+	args_init(&command->args);
+	command->redirection = NULL;
+	command->heredoc_delim = NULL;
+}
+
+int	command_fork(
 		t_command *command,
 		char ***argv,
 		bool is_first_command,
 		bool is_last_command
 ) {
-	if (is_first_command)
+	pid_t	pid;
+
+	if (!command_make(command, argv, is_first_command, is_last_command))
+		return (-1);
+	pid = fork();
+	if (pid < 0)
+		return (perror(command->args.split_args[0]),
+			args_free_contents(&command->args), -1);
+	if (pid == 0)
 	{
-		if (ft_strncmp(**argv, "here_doc", 9) == 0)
-		{
-			++*argv;
-			command->heredoc_delim = *((*argv)++);
-		}
-		else
-		{
-			command->redirection = *((*argv)++);
-			command->redirect_fd = STDIN_FILENO;
-		}
+		child_redirect_fds(command);
+		child_setup_pipes(command);
+		child_execvpe(command);
 	}
-	command->args = split_str_ptr_array(*((*argv)++), ' ', &command->argc);
-	if (is_last_command)
-	{
-		command->redirection = *((*argv)++);
-		command->redirect_fd = STDOUT_FILENO;
-	}
+	args_free_contents(&command->args);
+	return (pid);
 }
 
 void	command_cleanup(t_command *command)
@@ -79,42 +93,34 @@ static bool	command_make(
 	if (!last_command)
 	{
 		if (pipe(command->pip_out) < 0)
-			return (free(command->args), false);
+			return (args_free_contents(&command->args), false);
 	}
 	return (true);
 }
 
-int	command_fork(
+static void	parse_cli(
 		t_command *command,
 		char ***argv,
 		bool is_first_command,
 		bool is_last_command
 ) {
-	pid_t	pid;
-
-	if (!command_make(command, argv, is_first_command, is_last_command))
-		return (-1);
-	pid = fork();
-	if (pid < 0)
-		return (perror(command->args[0]), free(command->args), -1);
-	if (pid == 0)
+	if (is_first_command)
 	{
-		child_redirect_fds(command);
-		child_setup_pipes(command);
-		child_execvpe(command);
+		if (ft_strncmp(**argv, "here_doc", 9) == 0)
+		{
+			++*argv;
+			command->heredoc_delim = *((*argv)++);
+		}
+		else
+		{
+			command->redirection = *((*argv)++);
+			command->redirect_fd = STDIN_FILENO;
+		}
 	}
-	free(command->args);
-	return (pid);
-}
-
-void	command_init(t_command *command)
-{
-	command->pip_out[0] = -1;
-	command->pip_out[1] = -1;
-	command->pip_in[0] = -1;
-	command->pip_in[1] = -1;
-	command->args = NULL;
-	command->argc = 0;
-	command->redirection = NULL;
-	command->heredoc_delim = NULL;
+	parse_args(*((*argv)++), &command->args);
+	if (is_last_command)
+	{
+		command->redirection = *((*argv)++);
+		command->redirect_fd = STDOUT_FILENO;
+	}
 }
