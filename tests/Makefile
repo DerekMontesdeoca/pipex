@@ -15,14 +15,13 @@ override LDFLAGS += -Llocal/lib -lcmocka -Wl,-rpath=$(shell realpath ./local/lib
 
 all:
 	$(MAKE) test
-	$(MAKE) test
 	$(MAKE) -C .. fclean
 	$(MAKE) test_bonus
 	$(MAKE) -C .. fclean
 
-test: $(BATS)
-	@$(MAKE) -C ..
-	./$(NAME)
+test: $(BATS) $(TEST) 
+	$(MAKE) -C ..
+	$^
 
 test_bonus: $(BATS)
 	./$(BONUS_NAME)  

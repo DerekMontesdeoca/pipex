@@ -16,27 +16,27 @@ create_io_files() {
 # Params
 ################################################################################
 
-@test "0 params" {
+@test "PARAMS: 0 params" {
     run ../pipex
     [[ "$status" != 0 ]]
 }
 
-@test "1 params" {
+@test "PARAMS: 1 params" {
     run ../pipex ""
     [[ "$status" != 0 ]]
 }
 
-@test "2 params" {
+@test "PARAMS: 2 params" {
     run ../pipex ""
     [[ "$status" != 0 ]]
 }
 
-@test "3 params" {
+@test "PARAMS: 3 params" {
     run ../pipex "" "" ""
     [[ "$status" != 0 ]]
 }
 
-@test "4 params OK" {
+@test "PARAMS: 4 params OK" {
     setup_io
     echo "hola como estas" > "$input_file"
 
@@ -45,7 +45,7 @@ create_io_files() {
     diff "$input_file" "$output_file"
 }
 
-@test "5 params" {
+@test "PARAMS: 5 params" {
     run ../pipex "" "" "" "" ""
     [[ "$status" != 0 ]]
 }
@@ -54,7 +54,7 @@ create_io_files() {
 # Empty commands
 ################################################################################
 
-@test "empty first command" {
+@test "EMPTY COMMANDS: empty first command" {
     setup_io
     echo hola > "$input_file"
 
@@ -64,7 +64,7 @@ create_io_files() {
     grep -El "Permission denied" <<< "$output"
 }
 
-@test "empty second command" {
+@test "EMPTY COMMANDS: empty second command" {
     setup_io
     echo hola > "$input_file"
 
@@ -78,7 +78,7 @@ create_io_files() {
 # Files
 ################################################################################
 
-@test "wrong permissions input file" {
+@test "FILE INPUT: wrong permissions input file" {
     setup_io
     touch "$input_file"
     echo -e "hola\ncomo\nestas" > "$input_file"
@@ -91,7 +91,7 @@ create_io_files() {
     [[ -e "$output_file" ]]
 }
 
-@test "wrong permission output file" {
+@test "FILE INPUT: wrong permission output file" {
     setup_io
     touch "$input_file" "$output_file"
     echo -e "hola\ncomo\nestas" > "$input_file"
@@ -103,7 +103,7 @@ create_io_files() {
     [[ "$status" -eq 1 ]]
 }
 
-@test "input file doesn't exist" {
+@test "FILE INPUT: input file doesn't exist" {
     setup_io
 
     run -0 ../pipex "$input_file" "" "cat" "$output_file"
@@ -112,7 +112,7 @@ create_io_files() {
     [[ "$output" =~ .*input.txt:\ No\ such\ file\ or\ directory ]]
 }
 
-@test "output file can't be created" {
+@test "FILE INPUT: output file can't be created" {
     setup_io
     touch "$input_file"
     chmod -200 $BATS_TEST_TMPDIR
@@ -123,7 +123,7 @@ create_io_files() {
     grep -lE '.*output.txt: Permission denied' <<< "$output"
 }
 
-@test "output file is a dir" {
+@test "FILE INPUT: output file is a dir" {
     setup_io
     touch "$input_file"
     mkdir "$output_file"
@@ -137,7 +137,7 @@ create_io_files() {
 # Limit FD
 ################################################################################
 
-@test "limit fd to get dup2 error" {
+@test "FDS: limit fd to get dup2 error" {
     create_io_files
     ulimit -n 7
     run -1 ../pipex "$input_file" cat cat "$output_file"
@@ -209,26 +209,26 @@ EOF
     ) "$output_file"
 }
 
-@test "PATH only colons" {
+@test "PATH: only colons" {
     test_path_colon "::::"
 }
 
-@test "PATH trailing colon" {
+@test "PATH: trailing colon" {
     test_path_colon "/something/:"
 }
 
-@test "PATH leading colon" {
+@test "PATH: leading colon" {
     test_path_colon ":/something/"
 }
 
-@test "PATH enodir fail" {
+@test "PATH: enodir fail" {
     test_path "/something:/doesntexist" -1 "doesntMattertext" ls man
     for cmd in ls man; do
         grep -E "$cmd: No such file or directory" <<< "$output"
     done
 }
 
-@test "PATH enodir no fail" {
+@test "PATH: enodir no fail" {
     test_path "/this_fails:/usr/bin" -0 "my text\nis great" cat "sed 's/t/r/g'"
     echo $output
     diff "$output_file" <(cat << EOF
@@ -238,7 +238,7 @@ EOF
     )
 }
 
-@test "PATH with combinations of slashes" {
+@test "PATH: with combinations of slashes" {
     test_path "///////usr///////bin//////" -0 "What is the deal\nfriendo\n done?\nfriendo" cat\ -e "sort -u"
     diff "$output_file" <(cat << EOF
  done?$
@@ -248,7 +248,7 @@ EOF
     )
 }
 
-@test "PATH unset" {
+@test "PATH: unset" {
     create_io_files
     cat << EOF > $BATS_TEST_TMPDIR/exe
 #!/bin/bash
@@ -266,4 +266,46 @@ EOF
     for cmd in rev exe; do
         grep -E "$cmd: No such file or directory" <<< "$output"
     done
+}
+
+@test "PATH: with space and newline" {
+    local path_dir="$BATS_TEST_TMPDIR/my cursed"$'\n'"bin"
+    mkdir "$path_dir"
+    cat << EOF > "$path_dir/mycat"
+#!/bin/bash
+/bin/cat
+EOF
+    chmod +100 "$path_dir/mycat"
+    test_path "$path_dir" -0 "this\nshould work in theory\nyeah" \
+        mycat /bin/cat
+    diff "$output_file" <(cat << EOF
+this
+should work in theory
+yeah
+EOF
+    )
+}
+
+################################################################################
+# Commands and Args Parsing
+################################################################################
+
+test_command_parsing() {
+    create_io_files
+    printf "%b" "$1" > "$input_file"
+    run -0 ../pipex "$input_file" "$2" "$3" "$output_file"
+    diff "$output_file" <(printf "%b" "$4")
+}
+
+@test "COMMAND PARSING: simple commands" {
+    test_command_parsing "zo hola chamo como estas\n vamos a ver" \
+        cat sort " vamos a ver\nzo hola chamo como estas\n"
+}
+
+@test "COMMAND PARSING: commands with args" {
+    test_command_parsing "old man look at my life, im a lot like you were\n" \
+        "sed \"-E\" 's/old/young/'" \
+        'sed -E s/im\ a\ lot\ like\ you\ were/you\'\''re\ a\ lot\ like\ I\ was/' \
+        "young man look at my life, you're a lot like I was\n"
+
 }
