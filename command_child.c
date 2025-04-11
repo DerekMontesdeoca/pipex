@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 18:05:13 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/10 18:14:15 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/11 05:48:18 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fcntl.h>
@@ -24,36 +24,46 @@ void	child_error(char *str, int exit_status)
 	exit(exit_status);
 }
 
-static void	try_paths(t_command *command)
+static bool	try_paths(t_command *command, t_path_iter *path_iter)
 {
 	int			exit_code;
 	extern char	**environ;
-	t_path_iter	path_iter;
-
-	if (!path_iter_make(&path_iter, environ, command->args.split_args[0]))
-		child_error(command->args.split_args[0], EXIT_FAILURE);
-	while (path_iter_next(&path_iter))
+	while (path_iter_next(path_iter))
 	{
-		exit_code = execve(path_iter.path, command->args.split_args, environ);
+		exit_code = execve(path_iter->path, command->args.split_args, environ);
 		if (exit_code < 0 && errno != ENOENT && errno != ENOTDIR)
-			child_error(command->args.split_args[0], EXIT_FAILURE);
+			return (false);
 	}
-	if (exit_code < 0)
-		child_error(command->args.split_args[0], EXIT_FAILURE);
+	return (exit_code == 0);
 }
 
 void	child_execvpe(t_command *command)
 {
 	extern char	**environ;
+	t_path_iter	path_iter;
 
+	if (!path_iter_make(&path_iter, environ, command->args.split_args[0]))
+		child_error(command->args.split_args[0], EXIT_FAILURE);
+	if (path_iter.env_path.paths_size == 0)
+	{
+		ft_fprintf(2, "%s: No such file or directory\n",
+				command->args.split_args[0]);
+		exit(EXIT_FAILURE);
+	}
 	if (ft_strchr(command->args.split_args[0], '/') != NULL)
 	{
 		if (execve(command->args.split_args[0],
 				command->args.split_args, environ) < 0)
+		{
+			path_iter_free_contents(&path_iter);
 			child_error(command->args.split_args[0], EXIT_FAILURE);
+		}
 	}
-	else
-		try_paths(command);
+	else if (!try_paths(command, &path_iter))
+	{
+		path_iter_free_contents(&path_iter);
+		child_error(command->args.split_args[0], EXIT_FAILURE);
+	}
 }
 
 void	child_setup_pipes(t_command *command)

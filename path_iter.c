@@ -6,13 +6,30 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 04:54:53 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/08 20:25:01 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/11 04:55:30 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include "pipex.h"
 #include "libft/libft.h"
+
+void	path_iter_free_contents(t_path_iter *iter_path)
+{
+	if (iter_path->path != NULL)
+		free(iter_path->path);
+	if (iter_path->env_path.paths != NULL)
+		free(iter_path->env_path.paths);
+	if (iter_path->env_path.raw_path != NULL)
+		free(iter_path->env_path.raw_path);
+	iter_path->path = NULL;
+	iter_path->path_size = 0;
+	iter_path->current = 0;
+	iter_path->env_path.paths = NULL;
+	iter_path->env_path.paths_size = 0;
+	iter_path->env_path.raw_path_len = 0;
+	iter_path->env_path.raw_path = NULL;
+}
 
 /**
  * Calculate max length from array of strings.
@@ -41,15 +58,19 @@ bool	path_iter_make(
 		char *program_name
 ) {
 	path_iter->program_name = program_name;
+	path_iter->current = 0;
+	path_iter->path_size = 0;
+	path_iter->path = NULL;
 	if (!env_path_make(&path_iter->env_path, environ))
 		return (false);
+	if (path_iter->env_path.paths_size == 0)
+		return (true);
 	path_iter->path_size = max_len(path_iter->env_path.paths,
 			path_iter->env_path.paths_size) + ft_strlen(program_name) + 2;
 	path_iter->path = malloc(path_iter->path_size);
 	if (path_iter->path == NULL)
 		return (free(path_iter->env_path.paths),
 			free(path_iter->env_path.raw_path), false);
-	path_iter->current = 0;
 	return (true);
 }
 

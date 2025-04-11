@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 10:48:14 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/07 05:24:07 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/11 04:56:21 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <stdlib.h>
@@ -121,6 +121,8 @@ bool	env_path_make(t_env_path *env_path, char **envp)
 	env_path->raw_path_len = 0;
 	env_path->paths_size = 0;
 	raw_path = find_path_variable(envp);
+	if (raw_path == NULL)
+		return (true);
 	count_paths_and_len(raw_path, &env_path->paths_size,
 		&env_path->raw_path_len);
 	env_path->paths = malloc(sizeof(char *) * env_path->paths_size);
