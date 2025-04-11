@@ -179,9 +179,34 @@ EOF
 
 @test "PATH empty" {
     create_io_files
-    PATH= run -1 ../pipex "$input_file" ls cat "$output_file"
+    PATH="" run -1 ../pipex "$input_file" ls cat "$output_file"
     grep -E 'ls: No such file or directory' <<< "$output"
     grep -E 'cat: No such file or directory' <<< "$output"
+}
+
+@test "PATH empty finds cwd" {
+    create_io_files
+    echo -e "hola\ncomo\nestas\n" > "$input_file"
+    cat << EOF > $BATS_TEST_TMPDIR/exe
+#!/bin/bash
+/bin/cat
+EOF
+    cat << EOF > $BATS_TEST_TMPDIR/rev
+#!/bin/bash
+/bin/rev
+EOF
+    cp ../pipex $BATS_TEST_TMPDIR
+    chmod +100 $BATS_TEST_TMPDIR/rev
+    chmod +100 $BATS_TEST_TMPDIR/exe
+    cd $BATS_TEST_TMPDIR
+    PATH="" ./pipex "$input_file" exe rev "$output_file"
+    diff <(cat << EOF
+aloh
+omoc
+satse
+
+EOF
+    ) "$output_file"
 }
 
 @test "PATH only colons" {
@@ -215,11 +240,30 @@ EOF
 
 @test "PATH with combinations of slashes" {
     test_path "///////usr///////bin//////" -0 "What is the deal\nfriendo\n done?\nfriendo" cat\ -e "sort -u"
-    cat $output_file >&3
     diff "$output_file" <(cat << EOF
  done?$
 friendo$
 What is the deal$
 EOF
     )
+}
+
+@test "PATH unset" {
+    create_io_files
+    cat << EOF > $BATS_TEST_TMPDIR/exe
+#!/bin/bash
+/bin/cat
+EOF
+    cat << EOF > $BATS_TEST_TMPDIR/rev
+#!/bin/bash
+/bin/rev
+EOF
+    cp ../pipex $BATS_TEST_TMPDIR
+    chmod +100 $BATS_TEST_TMPDIR/rev
+    chmod +100 $BATS_TEST_TMPDIR/exe
+    cd $BATS_TEST_TMPDIR
+    run -1 env -u PATH ./pipex "$input_file" exe rev "$output_file"
+    for cmd in rev exe; do
+        grep -E "$cmd: No such file or directory" <<< "$output"
+    done
 }
