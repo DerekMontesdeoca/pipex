@@ -177,14 +177,14 @@ EOF
     ) "$output_file"
 }
 
-@test "PATH empty" {
+@test "PATH: empty fails if exe not in cwd" {
     create_io_files
     PATH="" run -1 ../pipex "$input_file" ls cat "$output_file"
     grep -E 'ls: No such file or directory' <<< "$output"
     grep -E 'cat: No such file or directory' <<< "$output"
 }
 
-@test "PATH empty finds cwd" {
+@test "PATH: empty finds cwd" {
     create_io_files
     echo -e "hola\ncomo\nestas\n" > "$input_file"
     cat << EOF > $BATS_TEST_TMPDIR/exe
@@ -297,15 +297,33 @@ test_command_parsing() {
     diff "$output_file" <(printf "%b" "$4")
 }
 
-@test "COMMAND PARSING: simple commands" {
+@test "COMMAND PARSING: no args" {
     test_command_parsing "zo hola chamo como estas\n vamos a ver" \
         cat sort " vamos a ver\nzo hola chamo como estas\n"
 }
 
-@test "COMMAND PARSING: commands with args" {
+@test "COMMAND PARSING: args with double and single quotes" {
+    test_command_parsing "I went from Phoenix, Arizona all the way to Tacoma" \
+        "sed \"s/Phoenix, Arizona/'Caracas, Venezuela'/" \
+        "sed 's/Tacoma/\"Madrid\"/'" \
+        "I went from 'Caracas, Venezuela' all the way to \"Madrid\""
+}
+
+@test "COMMAND PARSING: args with escapes, double, and single quotes" {
     test_command_parsing "old man look at my life, im a lot like you were\n" \
         "sed \"-E\" 's/old/young/'" \
         'sed -E s/im\ a\ lot\ like\ you\ were/you\'\''re\ a\ lot\ like\ I\ was/' \
         "young man look at my life, you're a lot like I was\n"
+}
 
+@test "COMMAND PARSING: escape insanity" {
+    test_command_parsing "o some \"com'pli\"''ca\\\\ted" \
+        'sed -E "s/\"/\\\\/"' \
+        'sed -E '\''s/o so'\''//' \
+        'me \\com'\''pli"'\'\''ca\\ted'
+}
+
+@test "COMMAND PARSING: xargs" {
+    test_command_parsing "/my/dir/important.txt /usr/stuff/not_important.yaml " \
+        "tr ' ' '\n'" "xargs -I{} basename {}" "important.txt\nnot_important.yaml\n"
 }
