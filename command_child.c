@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 18:05:13 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/14 13:47:28 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/14 22:49:56 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fcntl.h>
@@ -18,26 +18,25 @@
 #include "libft/libft.h"
 #include "pipex.h"
 
-void	child_error(char *str, int exit_status)
+static bool	try_paths(t_command *command, t_path_iter *path_iter);
+
+void run_child(t_pipes *pipes, char **argv)
+{
+	t_command	command;
+
+	parse_command(&command);
+	command_redirect_fds(&command);
+	pipes_setup_io(pipes);
+	command_execvpe(&command);
+}
+
+inline void	child_error(char *str, int exit_status)
 {
 	perror(str);
 	exit(exit_status);
 }
 
-static bool	try_paths(t_command *command, t_path_iter *path_iter)
-{
-	int			exit_code;
-	extern char	**environ;
-	while (path_iter_next(path_iter))
-	{
-		exit_code = execve(path_iter->path, command->args.arg_pointers, environ);
-		if (exit_code < 0 && errno != ENOENT && errno != ENOTDIR)
-			return (false);
-	}
-	return (exit_code == 0);
-}
-
-void	child_execvpe(t_command *command)
+void	command_execvpe(t_command *command)
 {
 	extern char	**environ;
 	t_path_iter	path_iter;
@@ -66,33 +65,7 @@ void	child_execvpe(t_command *command)
 	}
 }
 
-void	child_setup_pipes(t_command *command)
-{
-	if (command->pip_in[1] != -1)
-	{
-		close(command->pip_in[1]);
-		command->pip_in[1] = -1;
-	}
-	if (command->pip_out[0] != -1)
-	{
-		close(command->pip_out[0]);
-		command->pip_out[0] = -1;
-	}
-	if (command->pip_in[0] != -1)
-	{
-		if (dup2(command->pip_in[0], STDIN_FILENO) < 0)
-			child_error("dup2", EXIT_FAILURE);
-		close(command->pip_in[0]);
-	}
-	if (command->pip_out[1] != -1)
-	{
-		if (dup2(command->pip_out[1], STDOUT_FILENO) < 0)
-			child_error("dup2", EXIT_FAILURE);
-		close(command->pip_out[1]);
-	}
-}
-
-void	child_redirect_fds(t_command *command)
+static void	command_redirect_fds(t_command *command)
 {
 	int	fd;
 	int	flag;
@@ -115,3 +88,17 @@ void	child_redirect_fds(t_command *command)
 	}
 	close(fd);
 }
+
+static bool	try_paths(t_command *command, t_path_iter *path_iter)
+{
+	int			exit_code;
+	extern char	**environ;
+	while (path_iter_next(path_iter))
+	{
+		exit_code = execve(path_iter->path, command->args.arg_pointers, environ);
+		if (exit_code < 0 && errno != ENOENT && errno != ENOTDIR)
+			return (false);
+	}
+	return (exit_code == 0);
+}
+

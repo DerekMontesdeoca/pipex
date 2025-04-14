@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 14:02:14 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/14 13:40:48 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/14 22:35:24 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,28 +35,19 @@ void	command_init(t_command *command)
  * @param argv Needs to be a ptr to array of strings (char ***) to be able to 
  * consume argv as they are processed.
  */
-int	command_fork(
-		t_command *command,
-		char ***argv,
-		bool is_first_command,
-		bool is_last_command
+int	fork_process(
+	char ***argv,
+	t_pipes *pipes
 ) {
 	pid_t	pid;
 
-	if (!command_make(command, argv, is_first_command, is_last_command))
-		return (-1);
 	pid = fork();
 	if (pid < 0)
-		return (perror(command->args.arg_pointers[0]),
-			args_free_contents(&command->args), -1);
-	if (pid == 0)
-	{
-		child_redirect_fds(command);
-		child_setup_pipes(command);
-		child_execvpe(command);
-	}
-	args_free_contents(&command->args);
-	return (pid);
+		return (perror("fork"), -1);
+	else if (pid == 0)
+		run_child(argv, pipes);
+	else
+		return (pid);
 }
 
 void	command_cleanup(t_command *command)

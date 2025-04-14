@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 19:06:51 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/11 04:55:48 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/14 22:49:54 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef PIPEX_H
@@ -29,6 +29,7 @@ typedef struct s_execution_result
 {
 	int		n_forks;
 	pid_t	last_pid;
+	bool	has_error;
 }	t_execution_result;
 
 /**
@@ -113,14 +114,24 @@ bool	path_iter_next(t_path_iter *iter);
 
 void	path_iter_free(t_path_iter *iter);
 
+typedef struct s_pipes
+{
+	int	pip_in[2];
+	int	pip_out[2];
+}	t_pipes;
+
+bool	pipes_rotate(t_pipes *pipes, bool first_command, bool last_command);
+
+void	pipes_close(t_pipes *pipes);
+
+bool	pipes_setup_io(t_pipes *pipes);
+
 /**
  * Represents all the data required to execute a piped command in the shell.
  * 
  * @member args Struct containing split args.
  * @member redirection File to redirect input or output to. redirect_fd
  * determines where this file is redirected to after opening.
- * @member pip_out Pipe created for the child's output.
- * @member pip_in Pipe created for the child's input.
  * @member heredoc_delim Stored so child can know when to stop reading from
  * stdin.
  */
@@ -130,8 +141,6 @@ typedef struct s_command
 	char		*redirection;
 	int			redirect_fd;
 	char		*heredoc_delim;
-	int			pip_out[2];
-	int			pip_in[2];
 }	t_command;
 
 /**
@@ -151,12 +160,7 @@ void	command_init(t_command *command);
  * 
  * @returns The fd of the newly forked process or -1 on error.
  */
-int		command_fork(
-			t_command *command,
-			char ***argv,
-			bool first_command,
-			bool last_command
-			);
+int		command_fork(t_command *command, char ***argv);
 
 /**
  * Cleans up the remaining pipes after all forks are done.
@@ -169,7 +173,7 @@ void	command_cleanup(t_command *command);
  * PATH environment variable. This function never returns. On error it exits,
  * and of success it execs.
  */
-void	child_execvpe(t_command *command);
+void	command_execvpe(t_command *command);
 
 /**
  * Print error and exit.
@@ -180,15 +184,8 @@ void	child_execvpe(t_command *command);
 void	child_error(char *str, int exit_status);
 
 /**
- * Handles pipe management on the child. After inheriting the pipes, the
- * function closes unused pipe ends, then it dup2s the pipes into the
- * appropriate fd's, and finally closes the old fd's.
- */
-void	child_setup_pipes(t_command *command);
-
-/**
  * Handle all child redirection needs beyond pipes.
  */
-void	child_redirect_fds(t_command *command);
+void	command_redirect_fds(t_command *command);
 
 #endif
