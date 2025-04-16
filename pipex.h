@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 19:06:51 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/11 04:55:48 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/15 12:20:36 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef PIPEX_H
@@ -158,10 +158,7 @@ int		command_fork(
 			bool last_command
 			);
 
-/**
- * Cleans up the remaining pipes after all forks are done.
- */
-void	command_cleanup(t_command *command);
+void	command_destroy_contents(t_command *command);
 
 /**
  * To be used on the child process. Execs the executable either by absolute or
@@ -169,26 +166,22 @@ void	command_cleanup(t_command *command);
  * PATH environment variable. This function never returns. On error it exits,
  * and of success it execs.
  */
-void	child_execvpe(t_command *command);
-
-/**
- * Print error and exit.
- * 
- * @param str The str passed to perror(3).
- * @param exit_status The parameter passed to exit(3).
- */
-void	child_error(char *str, int exit_status);
+bool	child_execvpe(t_command *command);
 
 /**
  * Handles pipe management on the child. After inheriting the pipes, the
  * function closes unused pipe ends, then it dup2s the pipes into the
  * appropriate fd's, and finally closes the old fd's.
  */
-void	child_setup_pipes(t_command *command);
+bool	child_setup_pipes(t_command *command);
 
 /**
  * Handle all child redirection needs beyond pipes.
  */
-void	child_redirect_fds(t_command *command);
+bool	child_redirect_fds(t_command *command);
+
+void	fd_close(int *pip);
+
+bool	fd_dup2_and_close_old(int *fd, int fd2, char *context);
 
 #endif
