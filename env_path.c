@@ -6,12 +6,39 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 10:48:14 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/11 04:56:21 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/17 19:25:22 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include <stdlib.h>
 #include <stdbool.h>
 #include "pipex.h"
+
+static void	count_paths_and_len(const char *str, size_t *n_paths, size_t *len);
+static void	copy_and_split_path(t_env_path *env_path, const char *raw_path);
+
+bool	env_path_make(t_env_path *env_path, char **envp)
+{
+	const char	*raw_path;
+
+	env_path->paths = NULL;
+	env_path->raw_path = NULL;
+	env_path->raw_path_len = 0;
+	env_path->paths_size = 0;
+	raw_path = find_path_variable(envp);
+	if (raw_path == NULL)
+		return (true);
+	count_paths_and_len(raw_path, &env_path->paths_size,
+		&env_path->raw_path_len);
+	env_path->paths = malloc(sizeof(char *) * env_path->paths_size);
+	if (env_path->paths == NULL)
+		return (false);
+	env_path->raw_path = malloc(env_path->raw_path_len + 1);
+	if (env_path->raw_path == NULL)
+		return (free(env_path->paths), false);
+	copy_and_split_path(env_path, raw_path);
+	return (true);
+}
 
 /**
  * Count the len of the PATH string while counting the amount of path
@@ -88,10 +115,8 @@ static void	copy_char(const char *raw_path, char **end, bool *is_new_path)
  * We also make sure to convert ":::" into ".:.:.:.", with each '.' representing
  * the CWD.
  */
-static void	copy_and_split_path(
-		t_env_path *env_path,
-		const char *raw_path
-) {
+static void	copy_and_split_path(t_env_path *env_path, const char *raw_path)
+{
 	char	*begin;
 	char	*end;
 	char	**path_push_iter;
@@ -110,27 +135,4 @@ static void	copy_and_split_path(
 		++raw_path;
 	}
 	split(&is_new_path, &path_push_iter, &begin, &end);
-}
-
-bool	env_path_make(t_env_path *env_path, char **envp)
-{
-	const char	*raw_path;
-
-	env_path->paths = NULL;
-	env_path->raw_path = NULL;
-	env_path->raw_path_len = 0;
-	env_path->paths_size = 0;
-	raw_path = find_path_variable(envp);
-	if (raw_path == NULL)
-		return (true);
-	count_paths_and_len(raw_path, &env_path->paths_size,
-		&env_path->raw_path_len);
-	env_path->paths = malloc(sizeof(char *) * env_path->paths_size);
-	if (env_path->paths == NULL)
-		return (false);
-	env_path->raw_path = malloc(env_path->raw_path_len + 1);
-	if (env_path->raw_path == NULL)
-		return (free(env_path->paths), false);
-	copy_and_split_path(env_path, raw_path);
-	return (true);
 }

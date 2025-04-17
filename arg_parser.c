@@ -6,20 +6,13 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 01:22:36 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/10 15:41:50 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/17 19:27:58 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdbool.h>
 #include <stddef.h>
 #include "arg_parser.h"
-
-void	arg_parser_reset(t_arg_parser *parser)
-{
-	parser->pos = 0;
-	parser->state = PARSE_STATE_IN_WORD;
-	parser->prev_is_backslash = false;
-}
 
 void	arg_parser_init(t_arg_parser *parser, const char *args)
 {
@@ -51,3 +44,11 @@ bool	arg_parser_next(t_arg_parser *parser)
 	}
 	return (true);
 }
+
+void	arg_parser_reset(t_arg_parser *parser)
+{
+	parser->pos = 0;
+	parser->state = PARSE_STATE_IN_WORD;
+	parser->prev_is_backslash = false;
+}
+

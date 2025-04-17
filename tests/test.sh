@@ -270,7 +270,7 @@ EOF
     )
 }
 
-@test "PATH: unset" {
+@test "PATH: unset doesn't find relative commands" {
     create_io_files
     cat << EOF > $BATS_TEST_TMPDIR/exe
 #!/bin/bash
@@ -288,6 +288,29 @@ EOF
     for cmd in rev exe; do
         grep -E "$cmd: No such file or directory" <<< "$output"
     done
+}
+
+@test "PATH: unset finds absolute commands" {
+    create_io_files
+    cat << EOF > $BATS_TEST_TMPDIR/exe
+#!/bin/bash
+/bin/cat
+EOF
+    cat << EOF > $BATS_TEST_TMPDIR/rev
+#!/bin/bash
+/bin/rev
+EOF
+    printf "hola\ncomo estas\n" > $input_file
+    cp ../pipex $BATS_TEST_TMPDIR
+    chmod +100 $BATS_TEST_TMPDIR/rev
+    chmod +100 $BATS_TEST_TMPDIR/exe
+    cd $BATS_TEST_TMPDIR
+    run -0 env -u PATH ./pipex "$input_file" ./exe ./rev "$output_file"
+    diff "$output_file" <(cat << EOF
+aloh
+satse omoc
+EOF
+    )
 }
 
 @test "PATH: with space and newline" {

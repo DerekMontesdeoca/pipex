@@ -6,3 +6,4 @@ tests/local
 **/*.gch
 tests/unit_tests/bin/*
 !**/.gitkeep
+.cache

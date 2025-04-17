@@ -6,20 +6,16 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/28 11:48:29 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/07 05:25:02 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/17 18:58:35 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include "libft/libft.h"
 
 /**
- * Joins head and tail by appending the tail to the head and storing the result
- * in result. IMPORTANT: allocate at least len(head) + len(tail) + 1 for '/'
- * + 1 for '\0'.
- * 
- * @param result Out parameter. If result size < len(head) + len(tail) + 1, then
- * path_join returns error.
- * @param size Out parameter. The size of the result.
- * @return 0 on success and -1 for error.
+ * Copy head to result.
+ * Remove trailing slashes.
+ * Add 1 trailing slash and NUL.
+ * Copy tail to result.
  */
 void	path_join(const char *head, const char *tail, char *result, size_t size)
 {

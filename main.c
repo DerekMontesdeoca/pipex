@@ -6,10 +6,11 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 19:08:28 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/15 12:00:25 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/17 18:25:36 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <assert.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdlib.h>
@@ -19,7 +20,7 @@
 #include "pipex.h"
 
 static t_execution_result	fork_commands(char **argv, int n_commands);
-static int	wait_children(t_execution_result execution_result);
+static int					wait_children(t_execution_result execution_result);
 
 int	main(int argc, char **argv)
 {
@@ -47,18 +48,22 @@ static t_execution_result	fork_commands(
 ) {
 	t_execution_result	result;
 	t_command			command;
+	bool				is_first_command;
+	bool				is_last_command;
 
+	assert(n_commands > 0);
 	command_init(&command);
 	result.n_forks = 0;
 	++argv;
 	while (result.n_forks < n_commands)
 	{
+		is_first_command = result.n_forks == 0;
+		is_last_command = result.n_forks == (n_commands - 1);
 		result.last_pid = command_fork(
 				&command,
 				&argv,
-				result.n_forks == 0,
-				result.n_forks == (n_commands - 1)
-				);
+				is_first_command,
+				is_last_command);
 		if (result.last_pid < 0)
 			break ;
 		++result.n_forks;
@@ -69,29 +74,29 @@ static t_execution_result	fork_commands(
 
 static int	wait_children(t_execution_result execution_result)
 {
-	int		i;
-	pid_t	pid;
-	int		wstatus;
-	int		last_wstatus;
+	int				i;
+	t_wait_status	status;
 
 	i = 0;
-	pid = 0;
+	status.exit_code = 0;
 	while (i < execution_result.n_forks)
 	{
-		pid = wait(&wstatus);
-		if (pid < 0)
+		status.pid = wait(&status.wstatus);
+		if (status.pid < 0)
 		{
 			perror("wait");
-			if (i == execution_result.n_forks - 1)
-				return (EXIT_FAILURE);
+			status.exit_code = EXIT_FAILURE;
 		}
-		if (pid == execution_result.last_pid)
-			last_wstatus = wstatus;
+		if (status.pid > 0 && status.pid == execution_result.last_pid)
+			status.last_wstatus = status.wstatus;
 		++i;
 	}
-	if (WIFEXITED(last_wstatus))
-		return (WEXITSTATUS(last_wstatus));
-	if (WIFSIGNALED(last_wstatus))
-		return (WTERMSIG(last_wstatus));
-	return (0);
+	if (status.exit_code == EXIT_FAILURE)
+		return (status.exit_code);
+	else if (WIFEXITED(status.last_wstatus))
+		return (WEXITSTATUS(status.last_wstatus));
+	else if (WIFSIGNALED(status.last_wstatus))
+		return (WTERMSIG(status.last_wstatus));
+	else
+		return (EXIT_SUCCESS);
 }

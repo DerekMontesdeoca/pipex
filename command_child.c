@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 18:05:13 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/15 12:21:08 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/17 18:52:45 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fcntl.h>
@@ -18,64 +18,19 @@
 #include "libft/libft.h"
 #include "pipex.h"
 
-static bool	try_paths(t_command *command, t_path_iter *path_iter)
+static bool	try_paths(t_command *command, t_path_iter *path_iter);
+static bool	child_execvpe(t_command *command);
+static bool	child_redirect_fds(t_command *command);
+static bool	child_setup_pipes(t_command *command);
+
+bool	command_child_exec(t_command *command)
 {
-	int			exit_code;
-	extern char	**environ;
-	while (path_iter_next(path_iter))
-	{
-		exit_code = execve(path_iter->path,
-				command->args.arg_pointers, environ);
-		if (exit_code < 0 && errno != ENOENT && errno != ENOTDIR)
-			break ;
-	}
-	if (exit_code < 0)
-		perror(command->args.arg_pointers[0]);
-	return (exit_code == 0);
+	return (child_redirect_fds(command)
+		&& child_setup_pipes(command)
+		&& child_execvpe(command));
 }
 
-bool	child_execvpe(t_command *command)
-{
-	extern char	**environ;
-	t_path_iter	path_iter;
-	bool		err;
-
-	if (!path_iter_make(&path_iter, environ, command->args.arg_pointers[0]))
-		return (false);
-	err = false;
-	if (path_iter.env_path.paths_size == 0)
-	{
-		ft_fprintf(STDERR_FILENO, "%s: No such file or directory\n",
-				command->args.arg_pointers[0]);
-		err = true;
-	}
-	else if (ft_strchr(command->args.arg_pointers[0], '/') != NULL)
-	{
-		err = execve(command->args.arg_pointers[0],
-				command->args.arg_pointers, environ) < 0;
-		if (err)
-			perror(command->args.arg_pointers[0]);
-	}
-	else
-		err = !try_paths(command, &path_iter);
-	path_iter_free_contents(&path_iter);
-	return (!err);
-}
-
-bool	child_setup_pipes(t_command *command)
-{
-	bool	err;
-
-	fd_close(&command->pip_in[1]);
-	fd_close(&command->pip_out[0]);
-	err = !(fd_dup2_and_close_old(&command->pip_in[0], STDIN_FILENO,
-			command->args.arg_pointers[0])
-		&& fd_dup2_and_close_old(&command->pip_out[1], STDOUT_FILENO,
-			command->args.arg_pointers[0]));
-	return (!err);
-}
-
-bool	child_redirect_fds(t_command *command)
+static bool	child_redirect_fds(t_command *command)
 {
 	int		fd;
 	int		flag;
@@ -102,4 +57,80 @@ bool	child_redirect_fds(t_command *command)
 		close(fd);
 	}
 	return (!(dup2_err || fd < 0));
+}
+
+/**
+ * Handles pipe management on the child. After inheriting the pipes, the
+ * function closes unused pipe ends, then it dup2s the pipes into the
+ * appropriate fd's, and finally closes the old fd's.
+ */
+static bool	child_setup_pipes(t_command *command)
+{
+	bool	err;
+
+	fd_close(&command->pip_in[1]);
+	fd_close(&command->pip_out[0]);
+	err = !(fd_dup2_and_close_old(&command->pip_in[0], STDIN_FILENO,
+			command->args.arg_pointers[0])
+		&& fd_dup2_and_close_old(&command->pip_out[1], STDOUT_FILENO,
+			command->args.arg_pointers[0]));
+	return (!err);
+}
+
+/**
+ * To be used on the child process. Execs the executable either by absolute or
+ * relative path, or by joining the name with all the path components in the
+ * PATH environment variable. This function never returns. On error it exits,
+ * and of success it execs.
+ */
+static bool	child_execvpe(t_command *command)
+{
+	extern char	**environ;
+	t_path_iter	path_iter;
+	bool		err;
+
+	if (!path_iter_make(&path_iter, environ, command->args.arg_pointers[0]))
+		return (false);
+	err = false;
+	if (ft_strchr(command->args.arg_pointers[0], '/') != NULL)
+	{
+		err = execve(command->args.arg_pointers[0],
+			command->args.arg_pointers, environ) < 0;
+		perror(command->args.arg_pointers[0]);
+	}
+	else if (path_iter.env_path.paths_size == 0)
+	{
+		ft_fprintf(STDERR_FILENO, "%s: No such file or directory\n",
+				command->args.arg_pointers[0]);
+		err = true;
+	}
+	else
+		err = !try_paths(command, &path_iter);
+	path_iter_free_contents(&path_iter);
+	return (!err);
+}
+
+static bool	try_paths(t_command *command, t_path_iter *path_iter)
+{
+	extern char	**environ;
+	bool		got_eaccess;
+	int			errnum;
+
+	got_eaccess = false;
+	while (path_iter_next(path_iter))
+	{
+		execve(path_iter->path, command->args.arg_pointers, environ);
+		errnum = errno;
+		if (errnum == EACCES)
+			got_eaccess = true;
+		if (errnum != ENOENT && errnum != ENOTDIR && errnum != EACCES)
+			break ;
+	}
+	if (got_eaccess)
+		ft_fprintf(STDERR_FILENO, "%s: %s\n", command->args.arg_pointers[0],
+				strerror(EACCES));
+	else
+		ft_fprintf(STDERR_FILENO, "%s: %s\n", command->args.arg_pointers[0],
+				strerror(errnum));
+	return (false);
 }

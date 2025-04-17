@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 12:16:23 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/15 12:20:39 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/17 19:27:21 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <stddef.h>
@@ -21,7 +21,7 @@ void	fd_close(int *pip)
 {
 	if (pip == NULL)
 		return ;
-	if (*pip != -1)
+	if (*pip >= 0)
 	{
 		close(*pip);
 		*pip = -1;
