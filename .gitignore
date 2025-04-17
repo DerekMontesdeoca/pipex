@@ -7,3 +7,4 @@ tests/local
 tests/unit_tests/bin/*
 !**/.gitkeep
 .cache
+.bonus_build

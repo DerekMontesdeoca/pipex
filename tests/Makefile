@@ -20,7 +20,7 @@ all:
 	$(MAKE) -C .. fclean
 
 test: $(BATS) $(TEST) 
-	$(MAKE) -C ..
+	$(MAKE) DEBUG=1 -C ..
 	$^
 
 test_bonus: $(BATS)

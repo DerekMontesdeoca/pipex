@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/07 04:54:53 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/11 04:55:30 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/17 20:51:33 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,21 +14,21 @@
 #include "pipex.h"
 #include "libft/libft.h"
 
-void	path_iter_free_contents(t_path_iter *iter_path)
+void	path_iter_free_contents(t_path_iter *path_iter)
 {
-	if (iter_path->path != NULL)
-		free(iter_path->path);
-	if (iter_path->env_path.paths != NULL)
-		free(iter_path->env_path.paths);
-	if (iter_path->env_path.raw_path != NULL)
-		free(iter_path->env_path.raw_path);
-	iter_path->path = NULL;
-	iter_path->path_size = 0;
-	iter_path->current = 0;
-	iter_path->env_path.paths = NULL;
-	iter_path->env_path.paths_size = 0;
-	iter_path->env_path.raw_path_len = 0;
-	iter_path->env_path.raw_path = NULL;
+	if (path_iter->path != NULL)
+		free(path_iter->path);
+	if (path_iter->env_path.paths != NULL)
+		free(path_iter->env_path.paths);
+	if (path_iter->env_path.raw_path != NULL)
+		free(path_iter->env_path.raw_path);
+	path_iter->path = NULL;
+	path_iter->path_size = 0;
+	path_iter->current = 0;
+	path_iter->env_path.paths = NULL;
+	path_iter->env_path.paths_size = 0;
+	path_iter->env_path.raw_path_len = 0;
+	path_iter->env_path.raw_path = NULL;
 }
 
 /**

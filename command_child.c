@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 18:05:13 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/17 18:52:45 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/17 20:21:42 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <fcntl.h>
@@ -47,13 +47,13 @@ static bool	child_redirect_fds(t_command *command)
 	fd = open(command->redirection, flag, 0664);
 	if (fd < 0)
 		ft_fprintf(STDERR_FILENO, "open: %s: %s\n",
-				command->redirection, strerror(errno));
-	else 
+			command->redirection, strerror(errno));
+	else
 	{
 		dup2_err = dup2(fd, command->redirect_fd) < 0;
 		if (dup2_err)
 			ft_fprintf(STDERR_FILENO, "%s: dup2: %s\n",
-					command->args.arg_pointers[0], strerror(errno));
+				command->args.arg_pointers[0], strerror(errno));
 		close(fd);
 	}
 	return (!(dup2_err || fd < 0));
@@ -71,9 +71,9 @@ static bool	child_setup_pipes(t_command *command)
 	fd_close(&command->pip_in[1]);
 	fd_close(&command->pip_out[0]);
 	err = !(fd_dup2_and_close_old(&command->pip_in[0], STDIN_FILENO,
-			command->args.arg_pointers[0])
-		&& fd_dup2_and_close_old(&command->pip_out[1], STDOUT_FILENO,
-			command->args.arg_pointers[0]));
+				command->args.arg_pointers[0])
+			&& fd_dup2_and_close_old(&command->pip_out[1], STDOUT_FILENO,
+				command->args.arg_pointers[0]));
 	return (!err);
 }
 
@@ -95,13 +95,13 @@ static bool	child_execvpe(t_command *command)
 	if (ft_strchr(command->args.arg_pointers[0], '/') != NULL)
 	{
 		err = execve(command->args.arg_pointers[0],
-			command->args.arg_pointers, environ) < 0;
+				command->args.arg_pointers, environ) < 0;
 		perror(command->args.arg_pointers[0]);
 	}
 	else if (path_iter.env_path.paths_size == 0)
 	{
 		ft_fprintf(STDERR_FILENO, "%s: No such file or directory\n",
-				command->args.arg_pointers[0]);
+			command->args.arg_pointers[0]);
 		err = true;
 	}
 	else
@@ -128,9 +128,9 @@ static bool	try_paths(t_command *command, t_path_iter *path_iter)
 	}
 	if (got_eaccess)
 		ft_fprintf(STDERR_FILENO, "%s: %s\n", command->args.arg_pointers[0],
-				strerror(EACCES));
+			strerror(EACCES));
 	else
 		ft_fprintf(STDERR_FILENO, "%s: %s\n", command->args.arg_pointers[0],
-				strerror(errnum));
+			strerror(errnum));
 	return (false);
 }

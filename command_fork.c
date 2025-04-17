@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/31 14:02:14 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/17 18:13:10 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/17 22:59:31 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ static bool	command_make(t_command *command, char ***argv,
 				bool first_command, bool last_command);
 static void	parse_cli(t_command *command, char ***argv,
 				bool is_first_command, bool is_last_command);
-static void	command_recycle(t_command *command);
 
 void	command_init(t_command *command)
 {
@@ -57,7 +56,10 @@ int	command_fork(
 		command_child_exec(command);
 		exit(EXIT_FAILURE);
 	}
-	command_recycle(command);
+	args_free_contents(&command->args);
+	command->redirection = NULL;
+	command->heredoc_delim = NULL;
+	command->redirect_fd = -1;
 	return (pid);
 }
 
@@ -66,7 +68,7 @@ void	command_destroy_contents(t_command *command)
 	int	**pips;
 	int	i;
 	int	j;
-	
+
 	pips = (int *[2]){command->pip_in, command->pip_out};
 	i = 0;
 	while (i < 2)
@@ -81,14 +83,6 @@ void	command_destroy_contents(t_command *command)
 	}
 	args_free_contents(&command->args);
 	command_init(command);
-}
-
-static void	command_recycle(t_command *command)
-{
-	args_free_contents(&command->args);
-	command->redirection = NULL;
-	command->heredoc_delim = NULL;
-	command->redirect_fd = -1;
 }
 
 /**
@@ -108,6 +102,8 @@ static bool	command_make(
 	parse_cli(command, argv, first_command, last_command);
 	if (!first_command)
 	{
+		fd_close(&command->pip_in[0]);
+		fd_close(&command->pip_in[1]);
 		ft_memcpy(command->pip_in, command->pip_out, sizeof(command->pip_in));
 		command->pip_out[0] = -1;
 		command->pip_out[1] = -1;

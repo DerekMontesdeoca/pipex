@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/10 01:22:36 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/17 19:27:58 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/17 20:21:50 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,4 +51,3 @@ void	arg_parser_reset(t_arg_parser *parser)
 	parser->state = PARSE_STATE_IN_WORD;
 	parser->prev_is_backslash = false;
 }
-

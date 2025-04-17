@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 12:16:23 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/17 19:27:21 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/17 20:18:06 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <stddef.h>
@@ -28,7 +28,6 @@ void	fd_close(int *pip)
 	}
 }
 
-
 bool	fd_dup2_and_close_old(int *fd, int fd2, char *context)
 {
 	if (fd == NULL)
@@ -38,7 +37,7 @@ bool	fd_dup2_and_close_old(int *fd, int fd2, char *context)
 		if (dup2(*fd, fd2) < 0)
 		{
 			ft_fprintf(STDERR_FILENO, "%s: dup2: %s\n",
-					context, strerror(errno));
+				context, strerror(errno));
 			return (false);
 		}
 		fd_close(fd);
