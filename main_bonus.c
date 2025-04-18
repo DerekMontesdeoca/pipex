@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 19:08:28 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/17 23:07:46 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/18 09:18:34 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 #include <stdlib.h>
 #include <wait.h>
 #include <stdio.h>
-#include "args.h"
 #include "libft/libft.h"
 #include "pipex.h"
 
@@ -109,15 +108,11 @@ static int	wait_children(t_execution_result execution_result)
 
 static int	count_commands(int argc, char **argv)
 {
-	t_args	args;
 	int		n_args;
 
-	if (!parse_args(argv[1], &args))
-		return (-1);
-	if (ft_strncmp(args.arg_pointers[0], "here_doc", 9) == 0)
+	if (ft_strncmp(argv[1], "here_doc", 9) == 0)
 		n_args = argc - 4;
 	else
 		n_args = argc - 3;
-	args_free_contents(&args);
 	return (n_args);
 }
