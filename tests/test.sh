@@ -15,7 +15,7 @@ create_io_files() {
 mem_check() {
     for cmd in "$HOME/.local/bin/valgrind" "/usr/local/bin/valgrind" "/usr/bin/valgrind"; do
         if [[ -x "$cmd" ]]; then
-            if ! "$cmd" -s --show-leak-kinds=all --leak-check=full --error-exitcode=42 "$@" 2>&3 1>&3; then
+            if ! "$cmd" -s --show-leak-kinds=all --leak-check=full --error-exitcode=42 "$@" 1>&2; then
                 [[ $? -ne 42 ]]
             fi
             break
@@ -276,16 +276,16 @@ EOF
 #!/bin/bash
 /bin/cat
 EOF
-    cat << EOF > $BATS_TEST_TMPDIR/rev
+    cat << EOF > $BATS_TEST_TMPDIR/revi
 #!/bin/bash
 /bin/rev
 EOF
     cp ../pipex $BATS_TEST_TMPDIR
-    chmod +100 $BATS_TEST_TMPDIR/rev
+    chmod +100 $BATS_TEST_TMPDIR/revi
     chmod +100 $BATS_TEST_TMPDIR/exe
     cd $BATS_TEST_TMPDIR
-    run -1 env -u PATH ./pipex "$input_file" exe rev "$output_file"
-    for cmd in rev exe; do
+    run -1 env -u PATH ./pipex "$input_file" exe revi "$output_file"
+    for cmd in revi exe; do
         grep -E "$cmd: No such file or directory" <<< "$output"
     done
 }

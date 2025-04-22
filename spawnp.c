@@ -1,33 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   args.h                                             :+:      :+:    :+:   */
+/*   spawnp.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/10 01:48:53 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/22 17:18:40 by dmontesd         ###   ########.fr       */
+/*   Created: 2025/03/31 14:02:14 by dmontesd          #+#    #+#             */
+/*   Updated: 2025/04/22 22:06:05 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef ARGS_H
-# define ARGS_H
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "pipex.h"
 
-# include <stdbool.h>
-# include <stddef.h>
-
-typedef struct s_args
+int	ft_spawnp(t_command *command)
 {
-	size_t	n_args;
-	size_t	args_data_size;
-	char	*args_data;
-	char	**arg_pointers;
-}	t_args;
+	pid_t	pid;
 
-void	args_free_contents(t_args *args);
-
-bool	parse_args(const char *raw_args, t_args *args_out);
-
-void	args_init(t_args *args);
-
-#endif
+	pid = fork();
+	if (pid < 0)
+		perror("fork");
+	else if (pid == 0)
+	{
+		ft_spawnp_child(command);
+		exit(EXIT_FAILURE);
+	}
+	if (command->heredoc_fd != -1)
+		fd_close(&command->heredoc_fd);
+	return (pid);
+}

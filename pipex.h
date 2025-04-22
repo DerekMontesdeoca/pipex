@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 19:06:51 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/17 20:17:20 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/22 23:15:03 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #ifndef PIPEX_H
@@ -15,7 +15,16 @@
 # include <stddef.h>
 # include <stdbool.h>
 # include <unistd.h>
+# include <limits.h>
 # include "args.h"
+
+# define MAX_ACTIONS 8
+
+typedef struct s_pos
+{
+	bool	is_first;
+	bool	is_last;
+}	t_pos;
 
 /**
  * Struct to return from the fork loop execution.
@@ -27,140 +36,100 @@
  */
 typedef struct s_execution_result
 {
-	int		n_forks;
+	int		n_processes;
 	pid_t	last_pid;
 }	t_execution_result;
 
 /**
- * t_env_path holds an allocated copy of the envp path variable without "PATH="
- * and with all ':' replaced with '\0'. Each beginning of each path is stored
- * in paths. size holds the size of the paths array. 
- * raw_path must be freed.
- * paths must be freed.
- */
-typedef struct s_env_path
-{
-	char	*raw_path;
-	size_t	raw_path_len;
-	char	**paths;
-	size_t	paths_size;
-}	t_env_path;
-
-/**
- * Creates a new env_path.
- */
-bool	env_path_make(t_env_path *env_path, char **envp);
-
-/**
- * Joins head and tail by appending the tail to the head and storing the result
- * in result. IMPORTANT: allocate at least len(head) + len(tail) + 1 for '/'
- * + 1 for '\0'.
- * 
- * @param result Out parameter. If result size < len(head) + len(tail) + 1, then
- * path_join returns error.
- * @param size Out parameter. The size of the result.
- * 
- * @return 0 on success and -1 for error.
- */
-void	path_join(
-			const char *head,
-			const char *tail,
-			char *result, size_t size
-			);
-
-/**
- * Finds the PATH environment variable in a char **envp.
+ * Finds the PATH environment variable in extern environ.
  * 
  * @returns A pointer to the variable without "PATH=" or NULL.
  */
-char	*find_path_variable(char **envp);
+char	*get_env_path(void);
 
-/**
- * An env path iterator that is consumed once traversed. Every call to next
- * joins the path with a program name specified when created. 
- * t_path_iter must be freed.
- *
- * @param path A buffer of the size of the max len path + / + program_name + \0.
- * @param path_size The size of @param path.
- * @param program_name a pointer to the program name on args.
- */
-typedef struct s_path_iter
+char	**get_env(void);
+
+typedef struct s_pipeline
 {
-	char		*path;
-	size_t		path_size;
-	size_t		current;
-	t_env_path	env_path;
-	char		*program_name;
-}	t_path_iter;
-
-void	path_iter_free_contents(t_path_iter *iter_path);
-
-/**
- * Creates a consumable path_iter.
- *
- * @param program_name A pointer to the name of the program that will be
- * concatenated with the path on every call to next().
- */
-bool	path_iter_make(t_path_iter *iter, char **environ, char *program_name);
-
-/**
- * Must be called before taking the value from @member path.
- *
- * @returns true when there is a valid value in @member path. When the iter is
- * consumed, it returns false.
- */
-bool	path_iter_next(t_path_iter *iter);
-
-void	path_iter_free(t_path_iter *iter);
-
-/**
- * Represents all the data required to execute a piped command in the shell.
- * 
- * @member args Struct containing split args.
- * @member redirection File to redirect input or output to. redirect_fd
- * determines where this file is redirected to after opening.
- * @member pip_out Pipe created for the child's output.
- * @member pip_in Pipe created for the child's input.
- * @member heredoc_delim Stored so child can know when to stop reading from
- * stdin.
- */
-typedef struct s_command
-{
-	t_args		args;
-	char		*redirection;
-	int			redirect_fd;
-	char		*heredoc_delim;
 	int			pip_out[2];
 	int			pip_in[2];
+}	t_pipeline;
+
+void	pipeline_init(t_pipeline *pipeline);
+
+void	pipeline_destroy_contents(t_pipeline *pipeline);
+
+bool	pipeline_next_command(t_pipeline *pipeline, t_pos pos);
+
+typedef struct s_open_action
+{
+	char	*filename;
+	int		fd;
+	int		flags;
+}	t_open_action;
+
+typedef struct s_dup2_action
+{
+	int	from_fd;
+	int	to_fd;
+}	t_dup2_action;
+
+typedef struct s_close_action
+{
+	int	fd;
+}	t_close_action;
+
+typedef enum e_cmd_action_type
+{
+	CMD_ACTION_OPEN,
+	CMD_ACTION_DUP2,
+	CMD_ACTION_CLOSE,
+}	t_cmd_action_type;
+
+typedef union u_cmd_action_union
+{
+	t_open_action	open;
+	t_close_action	close;
+	t_dup2_action	dup2;
+}	t_cmd_action_union;
+
+typedef struct s_cmd_action
+{
+	t_cmd_action_type	action_type;
+	t_cmd_action_union	action;
+}	t_cmd_action;
+
+typedef enum e_pipe_setup_type
+{
+	PIPE_SETUP_READ,
+	PIPE_SETUP_WRITE,
+}	t_pipe_setup_type;
+
+typedef struct s_command
+{
+	t_args			args;
+	t_cmd_action	actions[MAX_ACTIONS];
+	int				n_actions;
+	int				heredoc_fd;
 }	t_command;
 
-/**
- * A zero initialization of the struct. Allows the struct to be ready to be
- * used by each process on every iteration of the fork loop.
- */
-void	command_init(t_command *command);
-
-/**
- * Parses the command arguments, populates the command, creates necessary pipes,
- * forks the process, and delegates to the forked process the opening of files,
- * redirection, and closing of fd's. After that, it cleans up any unused fd's in
- * the parent.
- *
- * @param argv A ptr to array of strings (char ***), so args can be consumed
- * as they are processed.
- * 
- * @returns The fd of the newly forked process or -1 on error.
- */
-int		command_fork(
+bool	command_make(
 			t_command *command,
 			char ***argv,
-			bool first_command,
-			bool last_command
-			);
+			t_pipeline *pipeline,
+			t_pos pos);
 
-bool	command_child_exec(t_command *command);
+int		ft_spawnp(t_command *command);
+
+bool	ft_spawnp_child(t_command *command);
 
 void	command_destroy_contents(t_command *command);
+
+void	command_add_close(t_command *command, int fd);
+
+void	command_add_dup2(t_command *command, int from_fd, int to_fd);
+
+void	command_add_open(t_command *command, char *filename, int fd, int flags);
 
 void	fd_close(int *pip);
 
@@ -173,5 +142,29 @@ typedef struct s_wait_status
 	int		last_wstatus;
 	int		exit_code;
 }	t_wait_status;
+
+bool	ft_execvp(char *file, char **argv);
+
+typedef struct s_path_tokenizer
+{
+	char	*file_ptr;
+	size_t	file_size;
+	char	*path_ptr;
+	char	path_buf[PATH_MAX];
+	bool	done;
+}	t_path_tokenizer;
+
+typedef enum e_path_tokenizer_status
+{
+	PATH_TOK_STATUS_ERR,
+	PATH_TOK_STATUS_OK,
+	PATH_TOK_STATUS_DONE,
+}	t_path_tokenizer_status;
+
+typedef char	t_filename_buf[19];
+
+int		ft_mkstemp(t_filename_buf filename_buf);
+
+int		setup_heredoc(char *delim);
 
 #endif

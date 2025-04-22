@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 CC := cc
-UNIT_TESTS := test_path test_env_path_statics test_arg_parse
+UNIT_TESTS := test_arg_parse
 UNIT_TEST_SRCS := $(UNIT_TESTS:%=unit_tests/%.c)
 UNIT_TEST_OBJS := $(UNIT_TEST_SRCS:%.c=%.o)
 UNIT_TEST_EXES := $(UNIT_TESTS:%=unit_tests/bin/%)
@@ -23,21 +23,14 @@ test: $(BATS) $(TEST)
 	$(MAKE) DEBUG=1 -C ..
 	$^
 
-test_bonus: $(BATS)
-	./$(BONUS_NAME)  
+test_bonus: $(BATS) $(BONUS_TEST)
+	$(MAKE) DEBUG=1 -C ..
+	$^
 
 unit_test: $(UNIT_TEST_EXES)
 	for t in $(UNIT_TEST_EXES); do \
 		./$$t; \
 	done
-
-unit_tests/bin/test_path: unit_tests/test_path.o ../path.o $(LIBFT) $(CMOCKA)
-	$(CC) $(LDFLAGS) -o $@ unit_tests/test_path.o ../path.o $(LIBFT)
-
-unit_tests/bin/test_env_path_statics: unit_tests/test_env_path_statics.o \
-	../path.o $(LIBFT)
-	$(CC) $(LDFLAGS) -o $@ unit_tests/test_env_path_statics.o \
-		../path.o $(LIBFT)
 
 unit_tests/bin/test_arg_parse: unit_tests/test_arg_parse.o $(LIBFT) $(CMOCKA) \
 	../arg_parser.o ../parse_arg.o ../arg_parser_states.o

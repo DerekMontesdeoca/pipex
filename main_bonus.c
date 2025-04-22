@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/27 19:08:28 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/18 09:18:34 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/22 22:54:00 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int	main(int argc, char **argv)
 		return (EXIT_FAILURE);
 	exit_code = EXIT_SUCCESS;
 	execution_result = fork_commands(argv, n_commands);
-	if (execution_result.n_forks > 0)
+	if (execution_result.n_processes > 0)
 		exit_code = wait_children(execution_result);
 	if (execution_result.last_pid < 0)
 		exit_code = EXIT_FAILURE;
@@ -53,27 +53,28 @@ static t_execution_result	fork_commands(
 ) {
 	t_execution_result	result;
 	t_command			command;
-	bool				is_first_command;
-	bool				is_last_command;
+	t_pipeline			pipeline;
+	t_pos				pos;
 
 	assert(n_commands > 0);
-	command_init(&command);
-	result.n_forks = 0;
+	result.n_processes = 0;
+	pipeline_init(&pipeline);
 	++argv;
-	while (result.n_forks < n_commands)
+	while (result.n_processes < n_commands)
 	{
-		is_first_command = result.n_forks == 0;
-		is_last_command = result.n_forks == (n_commands - 1);
-		result.last_pid = command_fork(
-				&command,
-				&argv,
-				is_first_command,
-				is_last_command);
+		pos.is_first = result.n_processes == 0;
+		pos.is_last = result.n_processes == (n_commands - 1);
+		if (!pipeline_next_command(&pipeline, pos))
+			break ;
+		if (!command_make(&command, &argv, &pipeline, pos))
+			break ;
+		result.last_pid = ft_spawnp(&command);
+		command_destroy_contents(&command);
 		if (result.last_pid < 0)
 			break ;
-		++result.n_forks;
+		++result.n_processes;
 	}
-	command_destroy_contents(&command);
+	pipeline_destroy_contents(&pipeline);
 	return (result);
 }
 
@@ -84,7 +85,7 @@ static int	wait_children(t_execution_result execution_result)
 
 	i = 0;
 	status.exit_code = 0;
-	while (i < execution_result.n_forks)
+	while (i < execution_result.n_processes)
 	{
 		status.pid = wait(&status.wstatus);
 		if (status.pid < 0)
