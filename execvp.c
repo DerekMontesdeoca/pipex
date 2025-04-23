@@ -6,11 +6,9 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 21:26:58 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/22 22:09:25 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/23 15:04:39 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#define _GNU_SOURCE
 
 #include <unistd.h>
 #include <stdio.h>
@@ -67,13 +65,13 @@ static t_path_tokenizer_status	path_tokenizer_next(t_path_tokenizer *paths)
 	if (paths->done)
 		return (PATH_TOK_STATUS_DONE);
 	path_prev = paths->path_ptr;
-	paths->path_ptr = strchrnul(paths->path_ptr, ':');
+	paths->path_ptr = ft_strchrnul(paths->path_ptr, ':');
 	if (paths->path_ptr - path_prev > PATH_MAX - 1)
 		return (errno = ENAMETOOLONG, PATH_TOK_STATUS_ERR);
-	path_buf_end = mempcpy(paths->path_buf, path_prev,
+	path_buf_end = ft_mempcpy(paths->path_buf, path_prev,
 			paths->path_ptr - path_prev);
 	*path_buf_end = '/';
-	path_buf_end = mempcpy(path_buf_end + (paths->path_ptr != path_prev),
+	path_buf_end = ft_mempcpy(path_buf_end + (paths->path_ptr != path_prev),
 			paths->file_ptr, paths->file_size);
 	if (*paths->path_ptr != '\0')
 		++paths->path_ptr;
