@@ -6,7 +6,23 @@
       "-Wall",
       "-Wextra",
       "-Werror",
-      "-g3",
+      "-I",
+      "libft/include",
+      "-o",
+      "main_bonus.o",
+      "main_bonus.c"
+    ],
+    "directory": "/home/demont93/Projects/pipex",
+    "file": "/home/demont93/Projects/pipex/main_bonus.c",
+    "output": "/home/demont93/Projects/pipex/main_bonus.o"
+  },
+  {
+    "arguments": [
+      "/home/demont93/.local/bin/cc",
+      "-c",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
       "-I",
       "libft/include",
       "-o",
@@ -24,7 +40,6 @@
       "-Wall",
       "-Wextra",
       "-Werror",
-      "-g3",
       "-I",
       "libft/include",
       "-o",
@@ -42,133 +57,6 @@
       "-Wall",
       "-Wextra",
       "-Werror",
-      "-g3",
-      "-I",
-      "libft/include",
-      "-o",
-      "main.o",
-      "main.c"
-    ],
-    "directory": "/home/demont93/Projects/pipex",
-    "file": "/home/demont93/Projects/pipex/main.c",
-    "output": "/home/demont93/Projects/pipex/main.o"
-  },
-  {
-    "arguments": [
-      "/home/demont93/.local/bin/cc",
-      "-c",
-      "-Wall",
-      "-Wextra",
-      "-Werror",
-      "-g3",
-      "-I",
-      "libft/include",
-      "-o",
-      "env.o",
-      "env.c"
-    ],
-    "directory": "/home/demont93/Projects/pipex",
-    "file": "/home/demont93/Projects/pipex/env.c",
-    "output": "/home/demont93/Projects/pipex/env.o"
-  },
-  {
-    "arguments": [
-      "/home/demont93/.local/bin/cc",
-      "-c",
-      "-Wall",
-      "-Wextra",
-      "-Werror",
-      "-g3",
-      "-I",
-      "libft/include",
-      "-o",
-      "arg_parser.o",
-      "arg_parser.c"
-    ],
-    "directory": "/home/demont93/Projects/pipex",
-    "file": "/home/demont93/Projects/pipex/arg_parser.c",
-    "output": "/home/demont93/Projects/pipex/arg_parser.o"
-  },
-  {
-    "arguments": [
-      "/home/demont93/.local/bin/cc",
-      "-c",
-      "-Wall",
-      "-Wextra",
-      "-Werror",
-      "-g3",
-      "-I",
-      "libft/include",
-      "-o",
-      "parse_arg.o",
-      "parse_arg.c"
-    ],
-    "directory": "/home/demont93/Projects/pipex",
-    "file": "/home/demont93/Projects/pipex/parse_arg.c",
-    "output": "/home/demont93/Projects/pipex/parse_arg.o"
-  },
-  {
-    "arguments": [
-      "/home/demont93/.local/bin/cc",
-      "-c",
-      "-Wall",
-      "-Wextra",
-      "-Werror",
-      "-g3",
-      "-I",
-      "libft/include",
-      "-o",
-      "arg_parser_states.o",
-      "arg_parser_states.c"
-    ],
-    "directory": "/home/demont93/Projects/pipex",
-    "file": "/home/demont93/Projects/pipex/arg_parser_states.c",
-    "output": "/home/demont93/Projects/pipex/arg_parser_states.o"
-  },
-  {
-    "arguments": [
-      "/home/demont93/.local/bin/cc",
-      "-c",
-      "-Wall",
-      "-Wextra",
-      "-Werror",
-      "-g3",
-      "-I",
-      "libft/include",
-      "-o",
-      "fd.o",
-      "fd.c"
-    ],
-    "directory": "/home/demont93/Projects/pipex",
-    "file": "/home/demont93/Projects/pipex/fd.c",
-    "output": "/home/demont93/Projects/pipex/fd.o"
-  },
-  {
-    "arguments": [
-      "/home/demont93/.local/bin/cc",
-      "-c",
-      "-Wall",
-      "-Wextra",
-      "-Werror",
-      "-g3",
-      "-I",
-      "libft/include",
-      "-o",
-      "pipeline.o",
-      "pipeline.c"
-    ],
-    "directory": "/home/demont93/Projects/pipex",
-    "file": "/home/demont93/Projects/pipex/pipeline.c",
-    "output": "/home/demont93/Projects/pipex/pipeline.o"
-  },
-  {
-    "arguments": [
-      "/home/demont93/.local/bin/cc",
-      "-c",
-      "-Wall",
-      "-Wextra",
-      "-Werror",
-      "-g3",
       "-I",
       "libft/include",
       "-o",
@@ -186,16 +74,15 @@
       "-Wall",
       "-Wextra",
       "-Werror",
-      "-g3",
       "-I",
       "libft/include",
       "-o",
-      "command.o",
-      "command.c"
+      "env.o",
+      "env.c"
     ],
     "directory": "/home/demont93/Projects/pipex",
-    "file": "/home/demont93/Projects/pipex/command.c",
-    "output": "/home/demont93/Projects/pipex/command.o"
+    "file": "/home/demont93/Projects/pipex/env.c",
+    "output": "/home/demont93/Projects/pipex/env.o"
   },
   {
     "arguments": [
@@ -204,7 +91,91 @@
       "-Wall",
       "-Wextra",
       "-Werror",
-      "-g3",
+      "-I",
+      "libft/include",
+      "-o",
+      "arg_parser.o",
+      "arg_parser.c"
+    ],
+    "directory": "/home/demont93/Projects/pipex",
+    "file": "/home/demont93/Projects/pipex/arg_parser.c",
+    "output": "/home/demont93/Projects/pipex/arg_parser.o"
+  },
+  {
+    "arguments": [
+      "/home/demont93/.local/bin/cc",
+      "-c",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-I",
+      "libft/include",
+      "-o",
+      "parse_arg.o",
+      "parse_arg.c"
+    ],
+    "directory": "/home/demont93/Projects/pipex",
+    "file": "/home/demont93/Projects/pipex/parse_arg.c",
+    "output": "/home/demont93/Projects/pipex/parse_arg.o"
+  },
+  {
+    "arguments": [
+      "/home/demont93/.local/bin/cc",
+      "-c",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-I",
+      "libft/include",
+      "-o",
+      "arg_parser_states.o",
+      "arg_parser_states.c"
+    ],
+    "directory": "/home/demont93/Projects/pipex",
+    "file": "/home/demont93/Projects/pipex/arg_parser_states.c",
+    "output": "/home/demont93/Projects/pipex/arg_parser_states.o"
+  },
+  {
+    "arguments": [
+      "/home/demont93/.local/bin/cc",
+      "-c",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-I",
+      "libft/include",
+      "-o",
+      "fd.o",
+      "fd.c"
+    ],
+    "directory": "/home/demont93/Projects/pipex",
+    "file": "/home/demont93/Projects/pipex/fd.c",
+    "output": "/home/demont93/Projects/pipex/fd.o"
+  },
+  {
+    "arguments": [
+      "/home/demont93/.local/bin/cc",
+      "-c",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-I",
+      "libft/include",
+      "-o",
+      "pipeline.o",
+      "pipeline.c"
+    ],
+    "directory": "/home/demont93/Projects/pipex",
+    "file": "/home/demont93/Projects/pipex/pipeline.c",
+    "output": "/home/demont93/Projects/pipex/pipeline.o"
+  },
+  {
+    "arguments": [
+      "/home/demont93/.local/bin/cc",
+      "-c",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
       "-I",
       "libft/include",
       "-o",
@@ -222,7 +193,6 @@
       "-Wall",
       "-Wextra",
       "-Werror",
-      "-g3",
       "-I",
       "libft/include",
       "-o",
@@ -232,6 +202,40 @@
     "directory": "/home/demont93/Projects/pipex",
     "file": "/home/demont93/Projects/pipex/mkstemp.c",
     "output": "/home/demont93/Projects/pipex/mkstemp.o"
+  },
+  {
+    "arguments": [
+      "/home/demont93/.local/bin/cc",
+      "-c",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-I",
+      "libft/include",
+      "-o",
+      "command.o",
+      "command.c"
+    ],
+    "directory": "/home/demont93/Projects/pipex",
+    "file": "/home/demont93/Projects/pipex/command.c",
+    "output": "/home/demont93/Projects/pipex/command.o"
+  },
+  {
+    "arguments": [
+      "/home/demont93/.local/bin/cc",
+      "-c",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-I",
+      "libft/include",
+      "-o",
+      "command_actions.o",
+      "command_actions.c"
+    ],
+    "directory": "/home/demont93/Projects/pipex",
+    "file": "/home/demont93/Projects/pipex/command_actions.c",
+    "output": "/home/demont93/Projects/pipex/command_actions.o"
   },
   {
     "arguments": [
@@ -962,6 +966,54 @@
       "-Iinclude",
       "-c",
       "-o",
+      "src/ft_strchrnul.o",
+      "src/ft_strchrnul.c"
+    ],
+    "directory": "/home/demont93/Projects/pipex/libft",
+    "file": "/home/demont93/Projects/pipex/libft/src/ft_strchrnul.c",
+    "output": "/home/demont93/Projects/pipex/libft/src/ft_strchrnul.o"
+  },
+  {
+    "arguments": [
+      "/home/demont93/.local/bin/cc",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "src/ft_mempcpy.o",
+      "src/ft_mempcpy.c"
+    ],
+    "directory": "/home/demont93/Projects/pipex/libft",
+    "file": "/home/demont93/Projects/pipex/libft/src/ft_mempcpy.c",
+    "output": "/home/demont93/Projects/pipex/libft/src/ft_mempcpy.o"
+  },
+  {
+    "arguments": [
+      "/home/demont93/.local/bin/cc",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "src/ft_strnlen.o",
+      "src/ft_strnlen.c"
+    ],
+    "directory": "/home/demont93/Projects/pipex/libft",
+    "file": "/home/demont93/Projects/pipex/libft/src/ft_strnlen.c",
+    "output": "/home/demont93/Projects/pipex/libft/src/ft_strnlen.o"
+  },
+  {
+    "arguments": [
+      "/home/demont93/.local/bin/cc",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Iinclude",
+      "-c",
+      "-o",
       "src/printf/ft_printf.o",
       "src/printf/ft_printf.c"
     ],
@@ -1128,5 +1180,22 @@
     "directory": "/home/demont93/Projects/pipex/libft",
     "file": "/home/demont93/Projects/pipex/libft/src/printf/parser_write_nbr.c",
     "output": "/home/demont93/Projects/pipex/libft/src/printf/parser_write_nbr.o"
-  }
+  },
+  {
+    "arguments": [
+      "/home/demont93/.local/bin/cc",
+      "-c",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-I",
+      "libft/include",
+      "-o",
+      "main.o",
+      "main.c"
+    ],
+    "directory": "/home/demont93/Projects/pipex",
+    "file": "/home/demont93/Projects/pipex/main.c",
+    "output": "/home/demont93/Projects/pipex/main.o"
+  },
 ]
