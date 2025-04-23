@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 04:03:05 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/22 23:16:29 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/23 11:58:47 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,5 +73,5 @@ static bool	write_heredoc_to_tmp(int tmp_fd, char *delim)
 	}
 	ft_fprintf(STDERR_FILENO, "warning: here-document delimited by end-of-file"
 		" (wanted `%s')\n", delim);
-	return (false);
+	return (true);
 }
