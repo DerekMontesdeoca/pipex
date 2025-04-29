@@ -4,4 +4,5 @@
 - [x] Test argument parser.
 - [x] Check leaks.
 - [x] Write integration tests.
-- [ ] Handle the bonus case.
+- [x] Handle the bonus case.
+- [ ] Remove handling of heredoc on non-bonus.
