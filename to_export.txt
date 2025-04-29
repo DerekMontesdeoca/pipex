@@ -4,6 +4,7 @@ arg_parser_states.c
 args.h
 command_actions.c
 command.c
+command_bonus.c
 env.c
 execvp.c
 fd.c

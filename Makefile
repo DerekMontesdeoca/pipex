@@ -6,7 +6,7 @@
 #    By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/27 19:01:30 by dmontesd          #+#    #+#              #
-#    Updated: 2025/04/29 14:34:31 by dmontesd         ###   ########.fr        #
+#    Updated: 2025/04/29 15:07:56 by dmontesd         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,7 +38,6 @@ all: $(NAME)
 bonus: .bonus_build
 
 .bonus_build: $(BONUS_OBJS) $(LIBFT)
-	[[ -f .bonus_build ]] && $(MAKE) fclean
 	$(CC) $(LDFLAGS) -o pipex $^
 	touch .bonus_build
 

@@ -11,5 +11,5 @@ source_dir="$(dirname "$0")"
 
 make -C "$source_dir" fclean
 
-rsync --files-from="$source_dir/to_export.txt" -avr --mkpath --delete-after \
+rsync --files-from="$source_dir/to_export.txt" -avr --mkpath \
 	"$source_dir" "$1"
