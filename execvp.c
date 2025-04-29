@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 21:26:58 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/23 15:04:39 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/29 13:33:09 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ static bool	path_tokenizer_make(t_path_tokenizer *paths, char *file_ptr)
 	assert(file_ptr != NULL);
 	paths->file_ptr = file_ptr;
 	paths->path_ptr = get_env_path();
-	paths->file_size = strnlen(file_ptr, NAME_MAX + 1) + 1;
+	paths->file_size = ft_strnlen(file_ptr, NAME_MAX + 1) + 1;
 	paths->done = false;
 	if (paths->file_size - 1 > NAME_MAX)
 	{
