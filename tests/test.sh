@@ -372,3 +372,11 @@ test_command_parsing() {
     test_command_parsing "/my/dir/important.txt /usr/stuff/not_important.yaml " \
         "tr ' ' '\n'" "xargs -I{} basename {}" "important.txt\nnot_important.yaml\n"
 }
+
+@test "COMMAND PARSING: heredoc is disabled" {
+    setup_io
+    run -0 ../pipex "here_doc" cat cat "$output_file"
+    grep -E "open: here_doc: No such file or directory" <<< "$output"
+    [[ -f "$output_file" ]]
+    [[ -z $(cat "$output_file") ]]
+}

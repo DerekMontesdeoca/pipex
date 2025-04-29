@@ -6,7 +6,7 @@
 #    By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/27 19:01:30 by dmontesd          #+#    #+#              #
-#    Updated: 2025/04/22 23:16:05 by dmontesd         ###   ########.fr        #
+#    Updated: 2025/04/29 14:34:31 by dmontesd         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,7 +30,7 @@ OBJS := $(SRCS:.c=.o)
 
 BONUS_SRCS := main_bonus.c spawnp.c spawnp_child.c execvp.c env.c arg_parser.c \
 			  parse_arg.c arg_parser_states.c fd.c pipeline.c heredoc.c \
-			  mkstemp.c command.c command_actions.c
+			  mkstemp.c command_bonus.c command_actions.c
 BONUS_OBJS := $(BONUS_SRCS:.c=.o)
 
 all: $(NAME)
@@ -38,6 +38,7 @@ all: $(NAME)
 bonus: .bonus_build
 
 .bonus_build: $(BONUS_OBJS) $(LIBFT)
+	[[ -f .bonus_build ]] && $(MAKE) fclean
 	$(CC) $(LDFLAGS) -o pipex $^
 	touch .bonus_build
 

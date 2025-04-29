@@ -5,4 +5,4 @@
 - [x] Check leaks.
 - [x] Write integration tests.
 - [x] Handle the bonus case.
-- [ ] Remove handling of heredoc on non-bonus.
+- [x] Remove handling of heredoc on non-bonus.

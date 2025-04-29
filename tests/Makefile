@@ -24,7 +24,7 @@ test: $(BATS) $(TEST)
 	$^
 
 test_bonus: $(BATS) $(BONUS_TEST)
-	$(MAKE) DEBUG=1 -C ..
+	$(MAKE) bonus DEBUG=1 -C ..
 	$^
 
 unit_test: $(UNIT_TEST_EXES)

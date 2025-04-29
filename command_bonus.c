@@ -1,18 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   command.c                                          :+:      :+:    :+:   */
+/*   command_bonus.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 23:35:48 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/29 13:58:33 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/29 13:58:25 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <assert.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include "libft/libft.h"
 #include "pipex.h"
 
 static void	command_pipe_setup_action(t_command *command, int pip[2],
@@ -39,7 +40,19 @@ bool	command_make(
 {
 	command_init(command);
 	if (pos.is_first)
-		command_add_open(command, *((*argv)++), STDIN_FILENO, O_RDONLY);
+	{
+		if (ft_strncmp(**argv, "here_doc", 9) == 0)
+		{
+			++*argv;
+			command->heredoc_fd = setup_heredoc(*((*argv)++));
+			if (command->heredoc_fd < 0)
+				return (false);
+			command_add_dup2(command, command->heredoc_fd, STDIN_FILENO);
+			command_add_close(command, command->heredoc_fd);
+		}
+		else
+			command_add_open(command, *((*argv)++), STDIN_FILENO, O_RDONLY);
+	}
 	parse_args(*((*argv)++), &command->args);
 	if (pos.is_last)
 		command_add_open(command, *((*argv)++), STDOUT_FILENO,
