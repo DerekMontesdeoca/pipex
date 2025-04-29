@@ -1,6 +1,7 @@
-Makefile
 arg_parser.c
+arg_parser.h
 arg_parser_states.c
+args.h
 command_actions.c
 command.c
 env.c
@@ -9,8 +10,14 @@ fd.c
 heredoc.c
 main_bonus.c
 main.c
+Makefile
 mkstemp.c
 parse_arg.c
 pipeline.c
+pipex_bonus.h
+pipex.h
 spawnp.c
 spawnp_child.c
+libft/src/
+libft/include/
+libft/Makefile

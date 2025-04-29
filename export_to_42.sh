@@ -2,12 +2,14 @@
 
 set -euo pipefail
 
-if [[ "#@" -ne 1 ]]; then
+if [[ "$#" -ne 1 ]]; then
 	echo "Must supply directory" 1>&2;
 	exit 1
 fi
 
 source_dir="$(dirname "$0")"
 
-rsync --files-from="$source_dir/to_export.txt" -av --mkpath --delete-after \
+make -C "$source_dir" fclean
+
+rsync --files-from="$source_dir/to_export.txt" -avr --mkpath --delete-after \
 	"$source_dir" "$1"
