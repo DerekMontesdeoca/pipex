@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 21:26:58 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/29 13:33:09 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/30 00:35:35 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,9 +100,9 @@ static bool	exec_paths(char *file, char **argv)
 			break ;
 		status = path_tokenizer_next(&paths);
 	}
-	if (status == PATH_TOK_STATUS_OK)
-		assert(false);
-	if (got_eaccess && status != PATH_TOK_STATUS_ERR)
+	if (status == PATH_TOK_STATUS_ERR)
+		ft_fprintf(STDERR_FILENO, "%s: %s\n", file, strerror(errno));
+	else if (got_eaccess)
 		ft_fprintf(STDERR_FILENO, "%s: %s\n", file, strerror(EACCES));
 	else
 		ft_fprintf(STDERR_FILENO, "%s: %s\n", file, strerror(errno));
