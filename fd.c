@@ -6,13 +6,12 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/15 12:16:23 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/17 20:18:06 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/29 23:46:09 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 #include <stddef.h>
 #include <stdbool.h>
 #include <unistd.h>
-#include <stdio.h>
 #include "libft/libft.h"
 #include <string.h>
 #include <errno.h>

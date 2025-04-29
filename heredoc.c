@@ -6,11 +6,10 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 04:03:05 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/29 13:33:35 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/29 23:46:29 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <string.h>
 #include <unistd.h>
 #include <assert.h>
 #include <stdlib.h>
