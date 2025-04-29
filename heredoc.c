@@ -6,7 +6,7 @@
 /*   By: dmontesd <dmontesd@student.42madrid.com>   +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 04:03:05 by dmontesd          #+#    #+#             */
-/*   Updated: 2025/04/29 23:46:29 by dmontesd         ###   ########.fr       */
+/*   Updated: 2025/04/30 00:44:35 by dmontesd         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,8 @@ static bool	write_heredoc_to_tmp(int tmp_fd, char *delim)
 	delim_size = ft_strnlen(delim, MAX_HEREDOC_DELIM);
 	if (delim_size == MAX_HEREDOC_DELIM)
 	{
-		ft_fprintf(STDERR_FILENO, "pipex: error: here-document delimiter %s is "
-			"too long, max length is %d\n", delim, MAX_HEREDOC_DELIM);
+		ft_fprintf(STDERR_FILENO, "pipex: error: here-document delimiter is "
+			"too long, max length is %d\n", MAX_HEREDOC_DELIM);
 		return (false);
 	}
 	line = get_next_line(STDIN_FILENO);
